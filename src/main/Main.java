@@ -1,12 +1,12 @@
 package main;
 
-import mainMenu.mainMenu;
+import mainMenu.MainMenuManager;
 
 public class Main {
 
 	public static void main(String[] args) {
 		
-		mainMenu mainGame = new mainMenu();
+		MainMenuManager mainGame = new MainMenuManager();
 	}
 
 }
