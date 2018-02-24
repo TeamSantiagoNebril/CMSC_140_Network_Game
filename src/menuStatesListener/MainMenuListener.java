@@ -1,4 +1,4 @@
-package mainMenu;
+package menuStatesListener;
 
 import java.awt.Color;
 import java.awt.EventQueue;
@@ -6,6 +6,9 @@ import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
 import java.util.Timer;
 import java.util.TimerTask;
+
+import mainMenu.MainMenuManager;
+import mainMenu.MenuPanel;
 
 public class MainMenuListener  extends MouseAdapter{
 
