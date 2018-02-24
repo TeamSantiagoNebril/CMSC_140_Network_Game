@@ -23,6 +23,8 @@ public class MainMenuManager extends JFrame{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
+	private int menuState = 1;
+	private MainMenuPanel mainPanel;
 	
 	public MainMenuManager()
 	{
@@ -33,11 +35,34 @@ public class MainMenuManager extends JFrame{
 		this.setTitle("Bomberman");
 		this.setLayout(new BorderLayout());
 		loadFonts();
-		MainMenuPanel mainPanel = new MainMenuPanel();
+		mainPanel = new MainMenuPanel(this);
 		this.add(mainPanel, BorderLayout.CENTER);
 		this.repaint();
 		this.setVisible(true);//Always execute this after all is loaded to avoid inconsistency
 	}
+	
+	public void changeState(int state)
+	{
+		switch(state)
+		{
+			case 1:
+				break;
+			case 2:
+				 mainPanel.disappear(2);
+				//System.exit(0);
+				break;
+			case 3:
+				break;
+			case 4:
+				break;
+			case 5:
+				System.exit(0);
+				break;
+			default:
+				break;
+		}
+	}
+	
 	
 	private void loadFonts()
 	{
