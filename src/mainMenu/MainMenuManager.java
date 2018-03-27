@@ -1,5 +1,8 @@
 package mainMenu;
 
+import Game.GamePanel;
+import Game.TileMap;
+
 import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
@@ -27,7 +30,8 @@ public class MainMenuManager extends JFrame{
 	private static final long serialVersionUID = 1L;
 	private int menuState = 1;
 	private MainMenuPanel mainPanel;
-	
+	private GamePanel gamePanel;
+	private JPanel panel;
 	public MainMenuManager()
 	{
 		super();
@@ -50,7 +54,11 @@ public class MainMenuManager extends JFrame{
 			case 1:
 				break;
 			case 2:
-				 mainPanel.disappear(2);
+				mainPanel.disappear(2);
+				gamePanel = new GamePanel();
+				this.setContentPane(gamePanel);
+				this.pack();
+				gamePanel.addNotify();							//start Thread
 				//System.exit(0);
 				break;
 			case 3:
