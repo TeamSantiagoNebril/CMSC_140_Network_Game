@@ -46,6 +46,25 @@ public class TileMap {
 		}
 	}
 	
+	public int getX() { return x; }
+	public int getY() { return y; }
+	
+	public void setX(int i){ x = i; }
+	public void setY(int i){ y = i; }
+	
+	
+	public int getRowTile(int x){
+		return x/(tileSize);
+	}
+	
+	public int getColTile(int y){
+		return y/(tileSize);
+	}
+	
+	public int getTile(int row, int col){
+		return map[row][col];
+	}
+	 	
 	public void update(){
 		
 	}
@@ -53,17 +72,19 @@ public class TileMap {
 	public void draw(Graphics2D g){
 		int current;
 		Toolkit t=Toolkit.getDefaultToolkit();  
-        Image i=t.getImage("assets/images/Brick_Block.png");  
+        Image hard_block = t.getImage("assets/images/Sprites/Blocks/SolidBlock.png");  
+        Image walkable = t.getImage("assets/images/Sprites/Blocks/BackgroundTile.png");
+        Image soft_block = t.getImage("assets/images/Sprites/Blocks/SoftBlock.jpg");
 		for(int row = 0; row < mapHeight; row++){
 			for(int col = 0; col < mapWidth; col++){
 				current = map[row][col];
 				if(current == 0){
-					g.setColor(Color.BLACK);
+					g.drawImage(hard_block, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}else if(current == 1){
-					g.setColor(Color.WHITE);
+					g.drawImage(walkable, col*tileSize, row*tileSize, tileSize, tileSize, null);
+				}else if(current == 2){
+					g.drawImage(soft_block, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}
-				
-				g.fillRect(x + col * tileSize, y + row * tileSize, tileSize, tileSize);
 			}
 		}
 	}

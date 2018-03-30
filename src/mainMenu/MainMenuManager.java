@@ -58,6 +58,7 @@ public class MainMenuManager extends JFrame{
 				gamePanel = new GamePanel();
 				this.setContentPane(gamePanel);
 				this.pack();
+				gamePanel.requestFocusInWindow();
 				gamePanel.addNotify();							//start Thread
 				//System.exit(0);
 				break;
