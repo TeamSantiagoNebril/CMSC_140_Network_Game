@@ -30,6 +30,8 @@ public class Player {
 	private boolean isStart = true;
 	private int lastMove;
 	private boolean clicked;
+	private boolean faceleft = false;
+	private PlayerMovementAnimation animation;
 	public Player(TileMap tileMap, int spriteSize){
 		this.tileMap = tileMap;
 		width = spriteSize;
@@ -38,6 +40,8 @@ public class Player {
 		
 		x = spriteSize;
 		y = spriteSize;
+		
+		animation = new PlayerMovementAnimation();
 	}
 	
 	public void setLeft(boolean bool){ left = bool; }
@@ -64,20 +68,24 @@ public class Player {
 			dx =  0;
 			dy = -moveSpeed;
 			clicked = true;
+			faceleft = false;
 		}else if(down){
 			dx = 0;
 			dy = moveSpeed;
 			tempy = height - 1;
 			clicked = true;
+			faceleft = false;
 		}else if(right){
 			dx = moveSpeed;
 			dy = 0;
 			tempx = width - 1;
 			clicked = true;
+			faceleft = false;
 		}else if(left){
 			dx = -moveSpeed;
 			dy = 0;
 			clicked = true;
+			faceleft = true;
 		}
 		
 		//check collisions
@@ -118,10 +126,14 @@ public class Player {
 				dx = 0;
 				dy = 0;
 			}else{
+				if(lastdx < 0){
+					faceleft = true;
+				}
 				
 				tox = x + lastdx;
 				toy = y + lastdy;
-				
+				dx = lastdx;		//for comparison purposes only
+				dy = lastdy;
 				if(lastMove == 2){
 					tempx = 0;
 					tempy = height - 1;
@@ -153,6 +165,21 @@ public class Player {
 				}
 			}
 		}
+		
+		if(dy < 0){
+			animation.setMove(1);
+		}else if(dy > 0){
+			animation.setMove(2);
+		}else if(dx != 0){
+			animation.setMove(3);
+		}else{
+			animation.setMove(4);
+		}
+		if(!clicked){
+			dx = 0;
+			dy = 0;
+		}
+		
 	}
 	
 	public void setdx(double a){
@@ -164,8 +191,11 @@ public class Player {
 	}
 	
 	public void draw(Graphics2D g){
-		g.setColor(Color.RED);
-		g.fillOval((int)x, (int)y, width, height);
+		if(faceleft){
+			g.drawImage(animation.getImage(), (int)x + width, (int)y, -width, height, null);
+		}else{
+			g.drawImage(animation.getImage(), (int)x, (int)y, width, height, null);
+		}
 	}
 	
 }
