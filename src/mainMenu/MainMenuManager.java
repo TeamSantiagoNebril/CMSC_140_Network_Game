@@ -1,7 +1,7 @@
 package mainMenu;
 
-import Game.GamePanel;
-import Game.TileMap;
+import game.GamePanel;
+import game.TileMap;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
