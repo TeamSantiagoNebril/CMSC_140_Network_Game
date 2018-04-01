@@ -84,6 +84,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		player.update();
 	}
 	
+	
 	public void render(){
 		tileMap.draw(g);
 		player.draw(g);
