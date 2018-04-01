@@ -65,6 +65,14 @@ public class TileMap {
 		return map[row][col];
 	}
 	 	
+	public void putBomb(int col, int row){
+		
+	}
+	
+	public double getExactTileLocation(int i){
+		return i/tileSize;
+	}
+	
 	public void update(){
 		
 	}
