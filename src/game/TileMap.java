@@ -95,6 +95,7 @@ public class TileMap extends Thread{
 	public void setY(int i){ y = i; }
 	
 	
+	
 	public int getRowTile(int x){
 		return x/(tileSize);
 	}
