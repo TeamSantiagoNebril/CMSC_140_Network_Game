@@ -84,8 +84,6 @@ public class TileMap extends Thread{
 					e.printStackTrace();
 				}
 			}
-		
-		
 	}
 	
 	public int getX() { return x; }
