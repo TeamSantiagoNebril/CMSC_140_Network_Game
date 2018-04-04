@@ -64,7 +64,12 @@ public class Player {
 	
 	public void update(){
 		if(isBombed){
-			
+			isBombed = false;
+			if(lastdx != 0){
+				putBombHorizontal((int)x, (int)y);
+			}else if(lastdy != 0){
+				putBombVertical((int)x, (int)y);
+			}
 		}else{
 			
 			clicked = false;
@@ -73,7 +78,7 @@ public class Player {
 			tempy = 0;
 			
 			double tempx2 = 0; //for example move is right, top and bottom part of the tile
-			double tempy2 = 0; //should equal to 1 (in case tile is between to tiles)
+			double tempy2 = 0; //should be equal to 1 (in case tile is between two tiles)
 			if(up){
 				dx =  0;
 				dy = -moveSpeed;
@@ -114,7 +119,7 @@ public class Player {
 				tempy2 = tempy + height - 1;
 			}
 			
-			if(calculateDestination(tempx, tempy) != 0 && calculateDestination(tempx2, tempy2) != 0){
+			if(calculateDestination(tempx, tempy) != 0 && calculateDestination(tempx2, tempy2) == 1){ //is tile walkable
 				x = tox;
 				y = toy;
 				if(clicked){
@@ -166,7 +171,7 @@ public class Player {
 						tempy2 = tempy + height - 1;
 					}
 					
-					if(calculateDestination(tempx, tempy) != 0 && calculateDestination(tempx2, tempy2) != 0){
+					if(calculateDestination(tempx, tempy) != 0 && calculateDestination(tempx2, tempy2) == 1){ //is tile walkable
 						x = tox;
 						y = toy;
 					}else{
@@ -197,7 +202,7 @@ public class Player {
 		double dominance = tileMap.getExactTileLocation(x) - (int)tileMap.getExactTileLocation(x);
 		int col;
 		int row;
-		if(dominance > 0.5){
+		if(dominance < 0.5){
 			col = tileMap.getColTile(x);
 			row = tileMap.getRowTile(y);
 			tileMap.putBomb(col, row);
@@ -212,7 +217,8 @@ public class Player {
 		double dominance = tileMap.getExactTileLocation(y) - (int)tileMap.getExactTileLocation(y);
 		int col;
 		int row;
-		if(dominance > 0.5){
+		System.out.println(dominance);
+		if(dominance < 0.5){
 			col = tileMap.getColTile(x);
 			row = tileMap.getRowTile(y);
 			tileMap.putBomb(col, row);
