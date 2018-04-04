@@ -38,6 +38,7 @@ public class TileMap extends Thread{
     private Image fire4 = t.getImage("assets/images/Sprites/Flame/Flame_f03.png");
     private Image fire5 = t.getImage("assets/images/Sprites/Flame/Flame_f04.png");
      
+    
 	public TileMap(String file, int tileSize){
 		this.tileSize = tileSize;
 		this.start();
@@ -62,6 +63,7 @@ public class TileMap extends Thread{
 		}catch(IOException e){
 		}
 	}
+	
 	
 	public void run(){
 		int a = 0;

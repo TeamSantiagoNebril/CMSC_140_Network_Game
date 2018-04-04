@@ -84,6 +84,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		player.update();
 	}
 	
+	
 	public void render(){
 		tileMap.draw(g);
 		player.draw(g);
@@ -109,6 +110,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			player.setLeft(true);
 		}else if(keyCode == KeyEvent.VK_RIGHT){
 			player.setRight(true);
+		}else if(keyCode == KeyEvent.VK_SPACE){
+			player.setBombed(true);
 		}
 	}
 	public void keyReleased(KeyEvent e){
@@ -127,6 +130,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		}else if(keyCode == KeyEvent.VK_RIGHT){
 			player.setRight(false);
 			player.setdx(0);
+		}else if(keyCode == KeyEvent.VK_SPACE){
+			player.setBombed(false);
 		}
 	}
 }
