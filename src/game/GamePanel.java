@@ -21,6 +21,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	private int FPS = 30;
 	private int targetTime = 1000/FPS;
 	private Player player;
+	private Player player2;
 	private TileMap tileMap;
 	
 	private BufferedImage bufferedImage;
@@ -76,18 +77,21 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		
 		int size = 48;
 		tileMap = new TileMap("assets/GameInit/tileMap.txt", size);
-		player = new Player(tileMap, size);
+		player = new Player(tileMap, size, size, size);
+		player2 = new Player(tileMap, size, size, size*11);
 	}
 	
 	public void update(){
 		tileMap.update();
 		player.update();
+		player2.update();
 	}
 	
 	
 	public void render(){
 		tileMap.draw(g);
 		player.draw(g);
+		player2.draw(g);
 	}
 	
 	public void draw(){
@@ -102,7 +106,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		int keyCode = e.getKeyCode();
 		
 		if(keyCode == KeyEvent.VK_UP){
-			
 			player.setUp(true);
 		}else if(keyCode == KeyEvent.VK_DOWN){
 			player.setDown(true);
@@ -112,6 +115,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			player.setRight(true);
 		}else if(keyCode == KeyEvent.VK_SPACE){
 			player.setBombed(true);
+		}
+		
+		if(keyCode == KeyEvent.VK_W){
+			player2.setUp(true);
+		}else if(keyCode == KeyEvent.VK_S){
+			player2.setDown(true);
+		}else if(keyCode == KeyEvent.VK_A){
+			player2.setLeft(true);
+		}else if(keyCode == KeyEvent.VK_D){
+			player2.setRight(true);
+		}else if(keyCode == KeyEvent.VK_Z){
+			player2.setBombed(true);
 		}
 	}
 	public void keyReleased(KeyEvent e){
@@ -132,6 +147,18 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			player.setdx(0);
 		}else if(keyCode == KeyEvent.VK_SPACE){
 			player.setBombed(false);
+		}
+		
+		if(keyCode == KeyEvent.VK_W){
+			player2.setUp(false);
+		}else if(keyCode == KeyEvent.VK_S){
+			player2.setDown(false);
+		}else if(keyCode == KeyEvent.VK_A){
+			player2.setLeft(false);
+		}else if(keyCode == KeyEvent.VK_D){
+			player2.setRight(false);
+		}else if(keyCode == KeyEvent.VK_Z){
+			player2.setBombed(false);
 		}
 	}
 }

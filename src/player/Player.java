@@ -32,17 +32,26 @@ public class Player {
 	private int lastMove;
 	private boolean clicked;
 	private boolean faceleft = false;
+	private int life = 3;
+	private double startX;
+	private double startY;
 	private PlayerMovementAnimation animation;
-	public Player(TileMap tileMap, int spriteSize){
+	private static int playerNumber;
+	public Player(){
+		
+	}
+	public Player(TileMap tileMap, int spriteSize, int x, int y){
 		this.tileMap = tileMap;
 		width = spriteSize;
 		height = spriteSize;
 		moveSpeed = 6;
 		
-		x = spriteSize;
-		y = spriteSize;
+		this.x = x;
+		this.y = y;
+		startX = x;
+		startY = y;
 		
-		animation = new PlayerMovementAnimation();
+		animation = new PlayerMovementAnimation(++playerNumber);
 	}
 	
 	public void setLeft(boolean bool){ left = bool; }
@@ -58,11 +67,26 @@ public class Player {
 	public int calculateDestination(double x, double y){
 		int col = tileMap.getColTile((int) x );
 		int row = tileMap.getRowTile((int) y );
-		//System.out.println(row + ":" + col);
 		return tileMap.getTile(row, col);
 	}
 	
+	public Boolean isDead(int x, int y){
+		if(calculateDestination(x, y) == 4)
+			return true;
+		return false;
+	}
+	
+	public void dead(){
+		
+		x = startX;
+		y = startY;
+	}
+	
 	public void update(){
+		
+		if(isDead((int)x, (int)y) || isDead((int)x, (int)y)){
+			dead();
+		}
 		if(isBombed){
 			isBombed = false;
 			if(lastdx != 0){
@@ -119,7 +143,8 @@ public class Player {
 				tempy2 = tempy + height - 1;
 			}
 			
-			if(calculateDestination(tempx, tempy) != 0 && calculateDestination(tempx2, tempy2) == 1){ //is tile walkable
+			if(calculateDestination(tempx, tempy) == 1 && calculateDestination(tempx2, tempy2) == 1 ||
+					(calculateDestination(tempx, tempy) == 4 && calculateDestination(tempx2, tempy2) == 4)){ //is tile walkable
 				x = tox;
 				y = toy;
 				if(clicked){
@@ -171,7 +196,8 @@ public class Player {
 						tempy2 = tempy + height - 1;
 					}
 					
-					if(calculateDestination(tempx, tempy) != 0 && calculateDestination(tempx2, tempy2) == 1){ //is tile walkable
+					if((calculateDestination(tempx, tempy) == 1 && calculateDestination(tempx2, tempy2) == 1)  ||
+							(calculateDestination(tempx, tempy) == 4 && calculateDestination(tempx2, tempy2) == 4)){ //is tile walkable
 						x = tox;
 						y = toy;
 					}else{
