@@ -1,6 +1,5 @@
 package game;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -22,7 +21,7 @@ public class TileMap extends Thread{
 	private boolean isBombed;
 	private int bombCol;
 	private int bombRow;
-	
+	private int flameIdentifier = 5;
 	private Toolkit t=Toolkit.getDefaultToolkit();  
     private Image hard_block = t.getImage("assets/images/Sprites/Blocks/SolidBlock.png");  
     private Image walkable = t.getImage("assets/images/Sprites/Blocks/BackgroundTile.png");
@@ -35,9 +34,8 @@ public class TileMap extends Thread{
     private Image fire1 = t.getImage("assets/images/Sprites/Flame/Flame_f00.png");
     private Image fire2 = t.getImage("assets/images/Sprites/Flame/Flame_f01.png");
     private Image fire3 = t.getImage("assets/images/Sprites/Flame/Flame_f02.png");
-    private Image fire4 = t.getImage("assets/images/Sprites/Flame/Flame_f03.png");
-    private Image fire5 = t.getImage("assets/images/Sprites/Flame/Flame_f04.png");
-     
+    private Image softBlockBurn = t.getImage("assets/Sprites/Blocks/softblock_burn_00.jpg");
+    private int softBlockBurnTracker = 0;
     
 	public TileMap(String file, int tileSize){
 		this.tileSize = tileSize;
@@ -60,12 +58,11 @@ public class TileMap extends Thread{
 			
 		}catch(FileNotFoundException e){
 			System.err.println("File Not Found");
-		}catch(IOException e){
-		}
+		}catch(IOException e){}
 	}
 	
 	
-	public void run(){
+	public void run(){     //always changing sprites for uniform animation of bombs and flames
 		int a = 0;
 			while(true){
 				a ++;
@@ -120,79 +117,102 @@ public class TileMap extends Thread{
 	
 
 	public void update(){
+		if(flameIdentifier == 500){
+			flameIdentifier = 5;
+		}
 		if(isBombed){
 			int threadRow = bombRow;
 			int threadCol = bombCol;
-			new Thread(){
-				public void run(){
-
+			new Thread(){                                                                 
+				public void run(){ //animating a tile to have bomb or flame
+					int localFlameIdentifier;
 					map[threadRow][threadCol] = 3;
 					isBombed = false;
 					
 					try {
 						Thread.sleep(3000);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					
-					setFlames(threadRow, threadCol);
+					localFlameIdentifier = flameIdentifier;
+					setFlames(threadRow, threadCol, flameIdentifier);
+					flameIdentifier++;
 					try {
 						Thread.sleep(1000);
 					} catch (InterruptedException e) {
 						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
-					removeFlame(threadRow, threadCol);
+					removeFlame(threadRow, threadCol, localFlameIdentifier);
 				}
 				
 			}.start();
 		}
 	}
 	
-	public void setFlames(int row, int col){
-		map[row][col] = 4;
+	public void setFlames(int row, int col, int set){
+		System.out.println(set);
+		map[row][col] = set;
 		if(row -1 > 0){
 			if(map[row - 1][col] != 0){
-				map[row - 1][col] = 4;
+				if(map[row - 1][col] == 2){
+					map[row - 1][col] = 4;
+				}else{
+					map[row - 1][col] = set;
+				}
 			}
 		}
 		if(row + 1 < mapHeight){
 			if(map[row + 1][col] != 0){
-				map[row + 1][col] = 4;
+				if(map[row + 1][col] == 2){
+					map[row + 1][col] = 4;
+				}else{
+					map[row + 1][col] = set;
+				}
 			}
 		}
 		if(col - 1 > 0){
 			if(map[row][col - 1] != 0){
-				map[row][col - 1] = 4;
+				if(map[row][col - 1] == 2){
+					map[row][col - 1] = 4;
+				}else{
+					map[row][col - 1] = set;
+				}
 			}
 		}
 		if(col + 1 < mapWidth){
 			if(map[row][col + 1] != 0){
-				map[row][col + 1] = 4;
+				if(map[row][col + 1] == 2){
+					map[row][col + 1] = 4;
+				}else{
+					map[row][col + 1] = set;
+				}
 			}
 		}
 	}
 	
-	public void removeFlame(int row, int col){
-		map[row][col] = 1;
+	public void removeFlame(int row, int col, int comp){
+		if(map[row][col] == comp){			
+			map[row][col] = 1;
+		}
 		if(row -1 > 0){
-			if(map[row - 1][col] == 4){
+			if(map[row - 1][col] == comp || map[row - 1][col] == 4){
 				map[row - 1][col] = 1;
 			}
 		}
 		if(row + 1 < mapHeight){
-			if(map[row + 1][col] == 4){
+			if(map[row + 1][col] == comp || map[row + 1][col] == 4){
 				map[row + 1][col] = 1;
 			}
 		}
 		if(col - 1 > 0){
-			if(map[row][col - 1] == 4){
+			if(map[row][col - 1] == comp || map[row][col - 1] == 4){
 				map[row][col - 1] = 1;
 			}
 		}
 		if(col + 1 < mapWidth){
-			if(map[row][col + 1] == 4){
+			if(map[row][col + 1] == comp || map[row][col + 1] == 4){
 				map[row][col + 1] = 1;
 			}
 		}
@@ -211,8 +231,11 @@ public class TileMap extends Thread{
 					g.drawImage(soft_block, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}else if(current == 3){
 					g.drawImage(bomb, col*tileSize, row*tileSize, tileSize, tileSize, null);
-				}else if(current == 4){
+				}else if(current >= 5){
 					g.drawImage(fire, col*tileSize, row*tileSize, tileSize, tileSize, null);
+				}else if(current == 4){
+					
+					g.drawImage(softBlockBurn, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}
 			}
 		}
