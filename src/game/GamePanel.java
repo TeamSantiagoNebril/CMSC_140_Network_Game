@@ -32,7 +32,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	
 	public GamePanel(){
 		super();
-		System.out.println("bea");
 		width = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 		height = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 		setPreferredSize(new Dimension(width, height));

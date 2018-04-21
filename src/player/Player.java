@@ -37,7 +37,9 @@ public class Player {
 	private double startY;
 	private PlayerMovementAnimation animation;
 	private static int playerNumber;
-	
+	private boolean bombLocation;
+	private double bombX;
+	private double bombY;
 	private boolean isAnimatingDeadImage;
 	public Player(){
 		
@@ -60,7 +62,8 @@ public class Player {
 	public void setRight(boolean bool){ right = bool; }
 	public void setUp(boolean bool){ up = bool; }
 	public void setDown(boolean bool){ down = bool; }
-	public void setBombed(boolean bool){ 
+	public void setBombed(boolean bool){
+		bombLocation = true;
 		if(!isBombed && bool || isBombed && !bool){
 			isBombed = bool;
 		}
@@ -110,8 +113,12 @@ public class Player {
 				isBombed = false;
 				if(lastdx != 0){
 					putBombHorizontal((int)x, (int)y);
+					bombX = x;
+					bombY = y;
 				}else if(lastdy != 0){
 					putBombVertical((int)x, (int)y);
+					bombX = x;
+					bombY = y;
 				}
 			}else{
 				
@@ -163,7 +170,9 @@ public class Player {
 				}
 				
 				if(calculateDestination(tempx, tempy) == 1 && calculateDestination(tempx2, tempy2) == 1 ||
-						(calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx2, tempy2) >= 4)){ //is tile walkable
+						(calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx2, tempy2) >= 4) ||  
+						(calculateDestination(x,y) == calculateDestination(bombX, bombY) || calculateDestination(tempx2,tempy2) == calculateDestination(bombX, bombY)) 
+						&& bombLocation){ //is tile walkable
 					x = tox;
 					y = toy;
 					if(clicked){
@@ -261,6 +270,8 @@ public class Player {
 								(calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx2, tempy2) >= 4)){ //is tile walkable
 								x = tox;
 								y = toy;
+								
+								
 							}else{
 								dx = 0;
 								dy = 0;
@@ -271,12 +282,26 @@ public class Player {
 			}
 			if(dy < 0){  // for bomberman sprite
 				animation.setMove(1);
+				tempx = x;
+				tempy = y + height;
 			}else if(dy > 0){
 				animation.setMove(2);
-			}else if(dx != 0){
+				tempx = x;
+				tempy = y;
+			}else if(dx < 0){
 				animation.setMove(3);
+				tempx = x + width;
+				tempy = y;
+			}else if(dx > 0){
+				animation.setMove(3);
+				tempx = x;
+				tempy = y;
 			}else{
 				animation.setMove(12);
+			}
+			if(calculateDestination(x, y) != calculateDestination(bombX, bombY) &&
+					calculateDestination(tempx, tempy) != calculateDestination(bombX, bombY)){
+				bombLocation = false;
 			}
 			if(!clicked){  //make bomberman stop if no keys are pressed
 				dx = 0;
