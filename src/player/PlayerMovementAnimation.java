@@ -78,30 +78,30 @@ public class PlayerMovementAnimation {
 			dead7 = t.getImage("assets/images/Sprites/Bomberman/Dead/Bman_D_f04.PNG");
 			dead8 = t.getImage("assets/images/Sprites/Bomberman/Dead/Bman_D_f05.PNG");
 		}else if(playerNumber == 5){
-			walkUp1 = t.getImage("assets/images/Sprites/creep/Back/Bman_B_f00.png");
-			walkUp2 = t.getImage("assets/images/Sprites/creep/Back/Bman_B_f01.png");
-			walkUp3 = t.getImage("assets/images/Sprites/creep/Back/Bman_B_f02.png");
-			walkUp4 = t.getImage("assets/images/Sprites/creep/Back/Bman_B_f03.png");
-			walkUp5 = t.getImage("assets/images/Sprites/creep/Back/Bman_B_f04.png");
-			walkUp6 = t.getImage("assets/images/Sprites/creep/Back/Bman_B_f05.png");
-			walkDown1 = t.getImage("assets/images/Sprites/creep/Front/Bman_F_f00.png");
-			walkDown2 = t.getImage("assets/images/Sprites/creep/Front/Bman_F_f01.png");
-			walkDown3 = t.getImage("assets/images/Sprites/creep/Front/Bman_F_f02.png");
-			walkDown4 = t.getImage("assets/images/Sprites/creep/Front/Bman_F_f03.png");
-			walkDown5 = t.getImage("assets/images/Sprites/creep/Front/Bman_F_f04.png");
-			walkDown6 = t.getImage("assets/images/Sprites/creep/Front/Bman_F_f05.png");
-			walkSide1 = t.getImage("assets/images/Sprites/creep/Side/Bman_F_f00.png");
-			walkSide2 = t.getImage("assets/images/Sprites/creep/Side/Bman_F_f01.png");
-			walkSide3 = t.getImage("assets/images/Sprites/creep/Side/Bman_F_f02.png");
-			walkSide4 = t.getImage("assets/images/Sprites/creep/Side/Bman_F_f03.png");
-			walkSide5 = t.getImage("assets/images/Sprites/creep/Side/Bman_F_f04.png");
-			walkSide6 = t.getImage("assets/images/Sprites/creep/Side/Bman_F_f05.png");
+			walkUp1 = t.getImage("assets/images/Sprites/creep/Back/Creep_B_f00.png");
+			walkUp2 = t.getImage("assets/images/Sprites/creep/Back/Creep_B_f01.png");
+			walkUp3 = t.getImage("assets/images/Sprites/creep/Back/Creep_B_f02.png");
+			walkUp4 = t.getImage("assets/images/Sprites/creep/Back/Creep_B_f03.png");
+			walkUp5 = t.getImage("assets/images/Sprites/creep/Back/Creep_B_f04.png");
+			walkUp6 = t.getImage("assets/images/Sprites/creep/Back/Creep_B_f05.png");
+			walkDown1 = t.getImage("assets/images/Sprites/creep/Front/Creep_F_f00.png");
+			walkDown2 = t.getImage("assets/images/Sprites/creep/Front/Creep_F_f01.png");
+			walkDown3 = t.getImage("assets/images/Sprites/creep/Front/Creep_F_f02.png");
+			walkDown4 = t.getImage("assets/images/Sprites/creep/Front/Creep_F_f03.png");
+			walkDown5 = t.getImage("assets/images/Sprites/creep/Front/Creep_F_f04.png");
+			walkDown6 = t.getImage("assets/images/Sprites/creep/Front/Creep_F_f05.png");
+			walkSide1 = t.getImage("assets/images/Sprites/creep/Side/Creep_S_f00.png");
+			walkSide2 = t.getImage("assets/images/Sprites/creep/Side/Creep_S_f01.png");
+			walkSide3 = t.getImage("assets/images/Sprites/creep/Side/Creep_S_f02.png");
+			walkSide4 = t.getImage("assets/images/Sprites/creep/Side/Creep_S_f03.png");
+			walkSide5 = t.getImage("assets/images/Sprites/creep/Side/Creep_S_f04.png");
+			walkSide6 = t.getImage("assets/images/Sprites/creep/Side/Creep_S_f05.png");
 		}
 		lastImage = walkDown1;
 	}
 	
 	public void setMove(int move){
-		if(move != lastMove || (frame > 7 && playerNumber != 5) || (frame > 5 && playerNumber == 5)){
+		if(move != lastMove || (frame > 7 && playerNumber != 5) || (frame == 5 && playerNumber == 5)){
 			frame = 0;
 		}
 		lastMove = move;

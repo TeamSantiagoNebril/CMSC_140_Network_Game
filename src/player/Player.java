@@ -92,7 +92,6 @@ public class Player {
 		
 		if(isDead((int)x, (int)y) && !isAnimatingDeadImage || isDead((int)x, (int)y + height - 1) && !isAnimatingDeadImage ||
 				isDead((int)x + width - 1, (int)y) && !isAnimatingDeadImage ){
-			System.out.println("pota");
 			new Thread(){
 				public void run(){
 					isAnimatingDeadImage = true;
@@ -120,7 +119,7 @@ public class Player {
 					bombX = x;
 					bombY = y;
 				}
-			}else{
+			}else if (up || down || left || right){
 				
 				clicked = false;
 				
@@ -168,11 +167,22 @@ public class Player {
 					tempx2 = tempx;
 					tempy2 = tempy + height - 1;
 				}
+
+				boolean allow = false;
+				
+				if(((int)tileMap.getExactTileLocation(bombX) == (int)tileMap.getExactTileLocation(x) || (int)tileMap.getExactTileLocation(bombX) == (int)tileMap.getExactTileLocation(x + width -1) ||                     //kun kabubutang la niya bomb pwede pa hiya magmove
+					(int)tileMap.getExactTileLocation(bombY) == (int)tileMap.getExactTileLocation(y) || (int)tileMap.getExactTileLocation(bombY) == (int)tileMap.getExactTileLocation(y + height - 1)) && bombLocation){
+					if(calculateDestination(tempx, tempy) == 3 && ((int)tileMap.getExactTileLocation(tempx) == (int)tileMap.getExactTileLocation(bombX) && (int)tileMap.getExactTileLocation(tempy) == (int)tileMap.getExactTileLocation(bombY))){
+						allow = true;
+					}
+					if(calculateDestination(tempx2, tempy2) == 3 && ((int)tileMap.getExactTileLocation(tempx2) == (int)tileMap.getExactTileLocation(bombX) && (int)tileMap.getExactTileLocation(tempy2) == (int)tileMap.getExactTileLocation(bombY))){
+						allow = true;
+					}
+				}
 				
 				if(calculateDestination(tempx, tempy) == 1 && calculateDestination(tempx2, tempy2) == 1 ||
-						(calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx2, tempy2) >= 4) ||  
-						(calculateDestination(x,y) == calculateDestination(bombX, bombY) || calculateDestination(tempx2,tempy2) == calculateDestination(bombX, bombY)) 
-						&& bombLocation){ //is tile walkable
+						(calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx2, tempy2) >= 4) || allow){ //is tile walkable
+					
 					x = tox;
 					y = toy;
 					if(clicked){
@@ -270,8 +280,6 @@ public class Player {
 								(calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx2, tempy2) >= 4)){ //is tile walkable
 								x = tox;
 								y = toy;
-								
-								
 							}else{
 								dx = 0;
 								dy = 0;
@@ -282,27 +290,30 @@ public class Player {
 			}
 			if(dy < 0){  // for bomberman sprite
 				animation.setMove(1);
-				tempx = x;
-				tempy = y + height;
 			}else if(dy > 0){
 				animation.setMove(2);
-				tempx = x;
-				tempy = y;
 			}else if(dx < 0){
 				animation.setMove(3);
-				tempx = x + width;
-				tempy = y;
 			}else if(dx > 0){
 				animation.setMove(3);
-				tempx = x;
-				tempy = y;
 			}else{
 				animation.setMove(12);
 			}
-			if(calculateDestination(x, y) != calculateDestination(bombX, bombY) &&
-					calculateDestination(tempx, tempy) != calculateDestination(bombX, bombY)){
+			
+			if(up || down){
+				if(bombLocation && (int)tileMap.getExactTileLocation(y) != (int)tileMap.getExactTileLocation(bombY) && (int)tileMap.getExactTileLocation(y + height - 1) != (int)tileMap.getExactTileLocation(bombY)){
+					bombLocation = false;
+				}
+			}else if( right ||  left){
+				if(bombLocation && (int)tileMap.getExactTileLocation(x) != (int)tileMap.getExactTileLocation(bombX) && (int)tileMap.getExactTileLocation(x + width - 1) != (int)tileMap.getExactTileLocation(bombX)){
+					bombLocation = false;
+				}
+			}
+			
+			if(calculateDestination(bombX, bombY) != 3){
 				bombLocation = false;
 			}
+		
 			if(!clicked){  //make bomberman stop if no keys are pressed
 				dx = 0;
 				dy = 0;
@@ -325,7 +336,6 @@ public class Player {
 			tileMap.putBomb(col, row);
 		}
 	}
-	
 	public int checkDominanceParams(){  //to return kun 70 percent or 30 percent han tile an kailangan igkita
 		if(((up || down) && lastMove == 4) || ((right || left) && lastMove == 1)){
 			return 70;

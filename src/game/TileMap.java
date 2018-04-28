@@ -96,8 +96,6 @@ public class TileMap extends Thread{
 	public void setX(int i){ x = i; }
 	public void setY(int i){ y = i; }
 	
-	
-	
 	public int getRowTile(int x){
 		return x/(tileSize);
 	}
@@ -120,7 +118,14 @@ public class TileMap extends Thread{
 		return i/tileSize;
 	}
 	
-
+	public int getMapWidth(){
+		return mapWidth;
+	}
+	
+	public int getMapHeight(){
+		return mapHeight;
+	}
+	
 	public void update(){
 		if(flameIdentifier == 500){
 			flameIdentifier = 5;
@@ -201,6 +206,8 @@ public class TileMap extends Thread{
 					map[row - 1][col] = 4;
 					burnBlockCoordinates.add(row-1);
 					burnBlockCoordinates.add(col);
+				}else if(map[row - 1][col] == 3){
+					map[row - 1][col] = set*100;
 				}else{
 					map[row - 1][col] = set;
 				}
@@ -212,6 +219,8 @@ public class TileMap extends Thread{
 					map[row + 1][col] = 4;
 					burnBlockCoordinates.add(row+1);
 					burnBlockCoordinates.add(col);
+				}else if(map[row + 1][col] == 3){
+					map[row + 1][col] = set*100;
 				}else{
 					map[row + 1][col] = set;
 				}
@@ -223,6 +232,8 @@ public class TileMap extends Thread{
 					map[row][col - 1] = 4;
 					burnBlockCoordinates.add(row);
 					burnBlockCoordinates.add(col-1);
+				}else if(map[row][col - 1] == 3){
+					map[row][col - 1] = set*100;
 				}else{
 					map[row][col - 1] = set;
 				}
@@ -234,6 +245,8 @@ public class TileMap extends Thread{
 					map[row][col + 1] = 4;
 					burnBlockCoordinates.add(row);
 					burnBlockCoordinates.add(col+1);
+				}else if(map[row][col + 1] == 3){
+					map[row][col + 1] = set*100;
 				}else{
 					map[row][col + 1] = set;
 				}
@@ -245,25 +258,35 @@ public class TileMap extends Thread{
 	public void removeFlame(int row, int col, int comp){
 		if(map[row][col] == comp){			
 			map[row][col] = 1;
+		}else if(map[row][col] == comp*100){
+			map[row][col] = 3;
 		}
 		if(row -1 > 0){
 			if(map[row - 1][col] == comp || map[row - 1][col] == 4){
 				map[row - 1][col] = 1;
+			}else if(map[row - 1][col] == comp*100){
+				map[row - 1][col] = 3;
 			}
 		}
 		if(row + 1 < mapHeight){
 			if(map[row + 1][col] == comp || map[row + 1][col] == 4){
 				map[row + 1][col] = 1;
+			}else if(map[row + 1][col] == comp*100){
+				map[row + 1][col] = 3;
 			}
 		}
 		if(col - 1 > 0){
 			if(map[row][col - 1] == comp || map[row][col - 1] == 4){
 				map[row][col - 1] = 1;
+			}else if(map[row][col - 1] == comp*100){
+				map[row][col - 1] = 3;
 			}
 		}
 		if(col + 1 < mapWidth){
 			if(map[row][col + 1] == comp || map[row][col + 1] == 4){
 				map[row][col + 1] = 1;
+			}else if(map[row][col + 1] == comp*100){
+				map[row][col + 1] = 3;
 			}
 		}
 	}

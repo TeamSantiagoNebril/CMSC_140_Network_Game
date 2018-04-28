@@ -4,7 +4,9 @@ import java.awt.Graphics2D;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class Monster extends Player{
+import game.TileMap;
+
+public class Monster{
 	private PlayerMovementAnimation animation;
 	private ArrayList<Integer> available = new ArrayList<Integer>();
 	private int availableCounter;
@@ -21,21 +23,31 @@ public class Monster extends Player{
 	private double toy;
 	
 	private double moveSpeed;
-	private boolean faceleft = false;
 	
 	private double tempx;
 	private double tempy;
 	
-	public Monster(double x, double y){
-		super();
+	private TileMap tileMap;
+	private int width;
+	private int height;
+	private int lastMove;
+	
+	private boolean faceleft;
+	public Monster(TileMap tileMap, double x, double y,  int width, int height){
 		animation = new PlayerMovementAnimation(5);
-		
+		this.tileMap = tileMap;
 		this.x = x;
 		this.y = y;
+		this.width = width;
+		this.height = height;
+		
+		moveSpeed = 6;
 	}
 	
-	public void dead(){
-		
+	public int calculateDestination(double x, double y){
+		int col = tileMap.getColTile((int) x );
+		int row = tileMap.getRowTile((int) y );
+		return tileMap.getTile(row, col);
 	}
 	
 	public void setLeft(boolean bool){ left = bool; }
@@ -43,65 +55,142 @@ public class Monster extends Player{
 	public void setUp(boolean bool){ up = bool; }
 	public void setDown(boolean bool){ down = bool; }
 	
-	public void calculateAvailable(int x, int y){
-		available.clear();
-		availableCounter = 0;
-		if(calculateDestination(x , y - 48) == 1){
-			available.add(1);
-			availableCounter++;
+	public void calculateMovement(){
+		Random rand = new Random();
+		int alternate = 0;
+		boolean clear = true;
+		ArrayList<Integer> possibleMoves = new ArrayList<Integer>();
+		if(y - moveSpeed > 0){
+			if((calculateDestination(x, y - moveSpeed) == 1 && calculateDestination(x + width - 1, y - moveSpeed) == 1) || 
+					(calculateDestination(x + width-1, y - moveSpeed) > 5 && calculateDestination(x + width-1, y - moveSpeed) > 5)){
+				if(lastMove != 2){
+					possibleMoves.add(1);
+				}else{
+					alternate = 1;
+				}
+			}
 		}
-		if(calculateDestination(x , y + 96) == 1){
-			available.add(2);
-			availableCounter++;
+		if(y + moveSpeed < tileMap.getMapHeight() * height){
+			if((calculateDestination(x , y + moveSpeed) == 1 && calculateDestination(x + width-1, y + moveSpeed) == 1 &&
+					calculateDestination(x , y + moveSpeed + height -1) == 1 && calculateDestination(x + width-1, y + moveSpeed + height -1) == 1) || 
+					(calculateDestination(x, y + moveSpeed) > 5 && calculateDestination(x + width-1, y + moveSpeed) > 5 &&
+					calculateDestination(x, y + moveSpeed + height - 1) > 5 && calculateDestination(x + width-1, y + moveSpeed + height - 1) > 5)){
+				if(lastMove != 1){
+					possibleMoves.add(2);
+				}else{
+					alternate = 2;
+				}
+			}
 		}
-		if(calculateDestination(x - 48, y) == 1){
-			available.add(3);
-			availableCounter++;
+		if(x - moveSpeed > 0){
+			if((calculateDestination(x - moveSpeed, y) == 1 && calculateDestination(x - moveSpeed, y + height-1) == 1) || 
+					(calculateDestination(x - moveSpeed, y) > 5 && calculateDestination(x - moveSpeed, y + height-1) > 5)){
+				if(lastMove != 4){
+					possibleMoves.add(3);
+				}else{
+					alternate = 3;
+				}
+			}
 		}
-		if(calculateDestination(x + 96, y) == 1){
-			available.add(4);
-			availableCounter++;
+		if(x + moveSpeed < tileMap.getMapWidth() * width){
+			if((calculateDestination(x + moveSpeed, y ) == 1 && calculateDestination(x + moveSpeed, y + height -1) == 1 &&
+					calculateDestination(x + moveSpeed + width - 1, y ) == 1 && calculateDestination(x + moveSpeed + width - 1, y + height -1) == 1) || 
+					(calculateDestination(x + moveSpeed, y ) > 5 && calculateDestination(x + moveSpeed, y + height-1) > 5 &&
+					calculateDestination(x + moveSpeed + width - 1, y ) > 5 && calculateDestination(x + moveSpeed + width - 1, y + height-1) > 5)){
+				if(lastMove != 3){
+					
+					possibleMoves.add(4);
+				}else{
+					alternate = 4;
+				}
+			}
+		}
+		
+		if(possibleMoves.size() == 0){ //bagan repel
+			if(lastMove == 1 && alternate == 2){
+				alternate = 0;
+				lastMove = 2;
+				possibleMoves.add(2);
+			}else if(lastMove == 2 && alternate == 1){
+				alternate = 0;
+				lastMove = 1;
+				possibleMoves.add(1);
+			}else if(lastMove == 3 && alternate == 4){
+				alternate = 0;
+				lastMove = 4;
+				possibleMoves.add(4);
+			}else if(lastMove == 4 && alternate == 3){
+				alternate = 0;
+				lastMove = 3;
+				possibleMoves.add(3);
+			}
+		}
+		
+		if(possibleMoves.size() == 0){
+			lastMove = 0;
+			setUp(false);
+			setLeft(false);
+			setRight(false);
+			setDown(false);
+		}else{
+			int num = rand.nextInt(possibleMoves.size());
+			int move = possibleMoves.get(num);
+			if(move == 1){
+				lastMove = 1;
+				setUp(true);
+				setLeft(false);
+				setRight(false);
+				setDown(false);
+			}else if(move == 2){
+				lastMove = 2;
+				setUp(false);
+				setLeft(false);
+				setRight(false);
+				setDown(true);
+			}else if(move == 3){
+				lastMove = 3;
+				setUp(false);
+				setLeft(true);
+				setRight(false);
+				setDown(false);
+			}else if(move == 4){
+				lastMove = 4;
+				setUp(false);
+				setLeft(false);
+				setRight(true);
+				setDown(false);
+			}
 		}
 	}
 	
 	public void update(){
-		calculateAvailable((int)x, (int)y);
-		Random rand = new Random();
-
-		int  n = rand.nextInt(availableCounter) + 1;
-		if(n == 1){
-			setRight(true);
-		}else if(n == 2){
-			setDown(true);
-		}else if(n == 3){
-			setLeft(true);
-		}else if(n == 4){
-			setRight(true);
-		}
+		calculateMovement();
 		
 		if(up){
-			dx =  0;
-			dy = -moveSpeed;
+			y -= moveSpeed;
 			faceleft = false;
+			animation.setMove(1);
 		}else if(down){
-			dx = 0;
-			dy = moveSpeed;
-			//tempy = height - 1;
+			y += moveSpeed;
 			faceleft = false;
-		}else if(right){
-			dx = moveSpeed;
-			dy = 0;
-			//tempx = width - 1;
-			faceleft = false;
+			animation.setMove(2);
 		}else if(left){
-			dx = -moveSpeed;
-			dy = 0;
+			x -= moveSpeed;
 			faceleft = true;
+			animation.setMove(3);
+		}else if(right){
+			x += moveSpeed;
+			faceleft = false;
+			animation.setMove(3);
+		}else{
+			animation.setMove(12);
 		}
 	}
-	
 	public void draw(Graphics2D g){
-		
+		if(faceleft){
+			g.drawImage(animation.getImage(), (int)x + width, (int)y, -width, height, null);
+		}else{
+			g.drawImage(animation.getImage(), (int)x, (int)y, width, height, null);
+		}
 	}
-	
 }

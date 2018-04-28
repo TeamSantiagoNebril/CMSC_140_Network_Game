@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
+import player.Monster;
 import player.Player;
 import player.Player;
 
@@ -22,6 +23,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	private int targetTime = 1000/FPS;
 	private Player player;
 	private Player player2;
+	private Monster monster;
 	private TileMap tileMap;
 	
 	private BufferedImage bufferedImage;
@@ -78,12 +80,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		tileMap = new TileMap("assets/GameInit/tileMap.txt", size);
 		player = new Player(tileMap, size, size, size);
 		player2 = new Player(tileMap, size, size, size*11);
+		monster = new Monster(tileMap, 5*size, size, size, size);
 	}
 	
 	public void update(){
 		tileMap.update();
 		player.update();
 		player2.update();
+		monster.update();
 	}
 	
 	
@@ -91,6 +95,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		tileMap.draw(g);
 		player.draw(g);
 		player2.draw(g);
+		monster.draw(g);
 	}
 	
 	public void draw(){
