@@ -48,6 +48,8 @@ public class MainMenuPanel extends JPanel{
 	
 	MainMenuListener hoverListener = new MainMenuListener();
 	
+	private MainMenuPanel thisMainMenuPanel = this;
+	
 	public MainMenuPanel(MainMenuManager manager)
 	{
 		this.manager = manager;
@@ -137,10 +139,12 @@ public class MainMenuPanel extends JPanel{
 	}
 	
 	
-	
+	private int currentStateSelected;
 	public void disappear(int state)
 	{
+		currentStateSelected = state;
 		timer.schedule(new DisappearUI(), 0, 50);
+		
 	}
 
 	@Override
@@ -150,8 +154,12 @@ public class MainMenuPanel extends JPanel{
 	   repaint();
 	}
 	
+	public void cancelTimer() {
+		timer.cancel();
+	}
+	
 	private class DisappearUI extends TimerTask {
-
+		
 		@Override
 		public void run() {
 			EventQueue.invokeLater(new Runnable() {
@@ -170,14 +178,20 @@ public class MainMenuPanel extends JPanel{
 						{
 							panels[counter].setBackgroundModified(new Color(0, 0, 100, panelColor.getAlpha()-5));
 						}
-						else if(panelColor.getAlpha() > 1)
+						else if(panelColor.getAlpha() >= 1)
 						{
 							panels[counter].setBackgroundModified(new Color(0, 0, 100, panelColor.getAlpha()-1));
 						}
 						
+						if(panelColor.getAlpha() == 0) {
+							thisMainMenuPanel.removeAll();
+							manager.initState(currentStateSelected);
+						}
 					}
 				}
 			});
 		}
+		
+		
 	}
 }

@@ -46,6 +46,10 @@ public class MainMenuListener  extends MouseAdapter{
 			{
 				manager.changeState(2);
 			}
+			else if(component.getID().equals("Settings"))
+			{
+				manager.changeState(4);
+			}
 		}
 		
 	}

@@ -1,26 +1,19 @@
 package mainMenu;
 
 import game.GamePanel;
-import game.TileMap;
 
 import java.awt.BorderLayout;
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
-import java.awt.GridLayout;
-import java.awt.Toolkit;
 import java.io.File;
 import java.io.IOException;
-
 import javax.swing.JFrame;
-import javax.swing.JLabel;
 import javax.swing.JPanel;
-import javax.swing.SwingConstants;
-import javax.swing.border.EmptyBorder;
 
 import menuStates.MainMenuPanel;
+import menuStates.OptionsPanel;
 
 public class MainMenuManager extends JFrame{
 	
@@ -31,7 +24,6 @@ public class MainMenuManager extends JFrame{
 	private int menuState = 1;
 	private MainMenuPanel mainPanel;
 	private GamePanel gamePanel;
-	private JPanel panel;
 	public MainMenuManager()
 	{
 		super();
@@ -42,7 +34,15 @@ public class MainMenuManager extends JFrame{
 		this.setLayout(new BorderLayout());
 		loadFonts();
 		mainPanel = new MainMenuPanel(this);
-		this.add(mainPanel, BorderLayout.CENTER);
+		
+		
+		OptionsPanel optionsPanel = new OptionsPanel();
+		optionsPanel.setBackground(Color.BLACK);
+		this.add(optionsPanel, BorderLayout.CENTER);
+		
+		
+		
+		//this.add(mainPanel, BorderLayout.CENTER);
 		this.repaint();
 		this.setVisible(true);//Always execute this after all is loaded to avoid inconsistency
 	}
@@ -60,11 +60,12 @@ public class MainMenuManager extends JFrame{
 				this.pack();
 				gamePanel.requestFocusInWindow();
 				gamePanel.addNotify();							//start Thread
-				//System.exit(0);
+				System.exit(0);
 				break;
 			case 3:
 				break;
-			case 4:
+			case 4: //Settings is pressed
+				mainPanel.disappear(4);
 				break;
 			case 5:
 				System.exit(0);
@@ -85,6 +86,43 @@ public class MainMenuManager extends JFrame{
 			 System.out.println("something is wrong");
 			 System.out.println(e);
 			}
+	}
+	
+	public void initState(int state) {
+		switch(state)
+		{
+			case 1: //Title
+				break;
+			case 2: //Play
+				break;
+			case 3: //Player info
+				break;
+			case 4: //Settings is pressed
+				if(menuState != state) {
+					menuState = state;
+					//System.out.println("went here");
+					mainPanel.cancelTimer();
+					this.remove(mainPanel);
+					initOptionsGUI();
+				}
+				break;
+			case 5: //Exit
+				System.exit(0);
+				break;
+			case 6: //Credits
+				
+				break;
+			default:
+				break;
+		}
+
+	}
+	
+	private void initOptionsGUI() {
+		OptionsPanel optionsPanel = new OptionsPanel();
+		optionsPanel.setBackground(Color.BLACK);
+		this.add(optionsPanel, BorderLayout.CENTER);
+		this.repaint();
 	}
 	
 }

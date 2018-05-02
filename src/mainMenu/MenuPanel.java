@@ -20,7 +20,7 @@ public class MenuPanel extends JPanel{
 	private static final long serialVersionUID = 1L;
 	private String ID;
 	
-	private JLabel panelLabel = new JLabel("");
+	protected JLabel panelLabel = new JLabel("");
 	
 	public MenuPanel(String ID)
 	{
