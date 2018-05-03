@@ -1,6 +1,5 @@
 package game;
 
-import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Toolkit;
@@ -8,6 +7,7 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class TileMap extends Thread{
 	private int x;
@@ -22,7 +22,7 @@ public class TileMap extends Thread{
 	private boolean isBombed;
 	private int bombCol;
 	private int bombRow;
-	
+	private int flameIdentifier = 5;
 	private Toolkit t=Toolkit.getDefaultToolkit();  
     private Image hard_block = t.getImage("assets/images/Sprites/Blocks/SolidBlock.png");  
     private Image walkable = t.getImage("assets/images/Sprites/Blocks/BackgroundTile.png");
@@ -35,10 +35,14 @@ public class TileMap extends Thread{
     private Image fire1 = t.getImage("assets/images/Sprites/Flame/Flame_f00.png");
     private Image fire2 = t.getImage("assets/images/Sprites/Flame/Flame_f01.png");
     private Image fire3 = t.getImage("assets/images/Sprites/Flame/Flame_f02.png");
-    private Image fire4 = t.getImage("assets/images/Sprites/Flame/Flame_f03.png");
-    private Image fire5 = t.getImage("assets/images/Sprites/Flame/Flame_f04.png");
-     
-    
+    private Image softBlockBurn1 = t.getImage("assets/images/Sprites/Blocks/softblock_burn_00.jpg");
+    private Image softBlockBurn2 = t.getImage("assets/images/Sprites/Blocks/softblock_burn_01.png");
+    private Image softBlockBurn3 = t.getImage("assets/images/Sprites/Blocks/softblock_burn_02.png");
+    private Image softBlockBurn4 = t.getImage("assets/images/Sprites/Blocks/softblock_burn_03.png");
+    private Image softBlockBurn5 = t.getImage("assets/images/Sprites/Blocks/softblock_burn_04.png");
+    private int softBlockBurnTracker = 0;
+    private Image softBlockBurn;
+    private Graphics2D g;
 	public TileMap(String file, int tileSize){
 		this.tileSize = tileSize;
 		this.start();
@@ -57,15 +61,13 @@ public class TileMap extends Thread{
 					map[row][col] = Integer.parseInt(tokens[col]);
 				}
 			}
-			
 		}catch(FileNotFoundException e){
 			System.err.println("File Not Found");
-		}catch(IOException e){
-		}
+		}catch(IOException e){}
 	}
 	
 	
-	public void run(){
+	public void run(){     //always changing sprites for uniform animation of bombs and flames
 		int a = 0;
 			while(true){
 				a ++;
@@ -94,8 +96,6 @@ public class TileMap extends Thread{
 	public void setX(int i){ x = i; }
 	public void setY(int i){ y = i; }
 	
-	
-	
 	public int getRowTile(int x){
 		return x/(tileSize);
 	}
@@ -118,100 +118,194 @@ public class TileMap extends Thread{
 		return i/tileSize;
 	}
 	
-
+	public int getMapWidth(){
+		return mapWidth;
+	}
+	
+	public int getMapHeight(){
+		return mapHeight;
+	}
+	
 	public void update(){
+		if(flameIdentifier == 500){
+			flameIdentifier = 5;
+		}
 		if(isBombed){
 			int threadRow = bombRow;
 			int threadCol = bombCol;
 			new Thread(){
-				public void run(){
-
+				
+				ArrayList <Integer> burnBlockCoordinates = new ArrayList<Integer>();
+				public void run(){ //animating a tile to have bomb or flame
+					int localFlameIdentifier;
 					map[threadRow][threadCol] = 3;
 					isBombed = false;
 					
 					try {
 						Thread.sleep(3000);
 					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
 						e.printStackTrace();
 					}
 					
-					setFlames(threadRow, threadCol);
-					try {
-						Thread.sleep(1000);
-					} catch (InterruptedException e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
+					localFlameIdentifier = flameIdentifier;
+					burnBlockCoordinates.clear();
+					burnBlockCoordinates = setFlames(threadRow, threadCol, flameIdentifier);
+					flameIdentifier++;
+					
+					for(int a = 0; a < 10; a++){
+						if(a == 0){
+							softBlockBurn = softBlockBurn1;
+						}else if(a == 1){
+							softBlockBurn = softBlockBurn1;
+						}else if(a == 2){
+							softBlockBurn = softBlockBurn2;
+						}else if(a == 3){
+							softBlockBurn = softBlockBurn2;
+						}else if(a == 4){
+							softBlockBurn = softBlockBurn3;
+						}else if(a == 5){
+							softBlockBurn = softBlockBurn3;
+						}else if(a == 6){
+							softBlockBurn = softBlockBurn4;
+						}else if(a == 7){
+							softBlockBurn = softBlockBurn4;
+						}else if(a == 8){
+							softBlockBurn = softBlockBurn5;
+						}else if(a == 8){
+							softBlockBurn = softBlockBurn5;
+						}
+						draw2(g);
+						try {
+							Thread.sleep(100);
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
 					}
-					removeFlame(threadRow, threadCol);
+					
+					removeFlame(threadRow, threadCol, localFlameIdentifier);
 				}
-				
+				public void draw2(Graphics2D g){
+					for(int a = 0; a < burnBlockCoordinates.size(); ){
+						int row = burnBlockCoordinates.get(a);
+						int col = burnBlockCoordinates.get(a+1);
+						a += 2;
+						g.drawImage(softBlockBurn, col*tileSize, row*tileSize, tileSize, tileSize, null);
+					}
+				}
 			}.start();
+			
 		}
 	}
 	
-	public void setFlames(int row, int col){
-		map[row][col] = 4;
+	public ArrayList<Integer> setFlames(int row, int col, int set){
+		ArrayList <Integer> burnBlockCoordinates = new ArrayList<Integer>();
+		map[row][col] = set;
 		if(row -1 > 0){
 			if(map[row - 1][col] != 0){
-				map[row - 1][col] = 4;
+				if(map[row - 1][col] == 2){
+					map[row - 1][col] = 4;
+					burnBlockCoordinates.add(row-1);
+					burnBlockCoordinates.add(col);
+				}else if(map[row - 1][col] == 3){
+					map[row - 1][col] = set*100;
+				}else{
+					map[row - 1][col] = set;
+				}
 			}
 		}
 		if(row + 1 < mapHeight){
 			if(map[row + 1][col] != 0){
-				map[row + 1][col] = 4;
+				if(map[row + 1][col] == 2){
+					map[row + 1][col] = 4;
+					burnBlockCoordinates.add(row+1);
+					burnBlockCoordinates.add(col);
+				}else if(map[row + 1][col] == 3){
+					map[row + 1][col] = set*100;
+				}else{
+					map[row + 1][col] = set;
+				}
 			}
 		}
 		if(col - 1 > 0){
 			if(map[row][col - 1] != 0){
-				map[row][col - 1] = 4;
+				if(map[row][col - 1] == 2){
+					map[row][col - 1] = 4;
+					burnBlockCoordinates.add(row);
+					burnBlockCoordinates.add(col-1);
+				}else if(map[row][col - 1] == 3){
+					map[row][col - 1] = set*100;
+				}else{
+					map[row][col - 1] = set;
+				}
 			}
 		}
 		if(col + 1 < mapWidth){
 			if(map[row][col + 1] != 0){
-				map[row][col + 1] = 4;
+				if(map[row][col + 1] == 2){
+					map[row][col + 1] = 4;
+					burnBlockCoordinates.add(row);
+					burnBlockCoordinates.add(col+1);
+				}else if(map[row][col + 1] == 3){
+					map[row][col + 1] = set*100;
+				}else{
+					map[row][col + 1] = set;
+				}
 			}
 		}
+		return burnBlockCoordinates;
 	}
 	
-	public void removeFlame(int row, int col){
-		map[row][col] = 1;
+	public void removeFlame(int row, int col, int comp){
+		if(map[row][col] == comp){			
+			map[row][col] = 1;
+		}else if(map[row][col] == comp*100){
+			map[row][col] = 3;
+		}
 		if(row -1 > 0){
-			if(map[row - 1][col] == 4){
+			if(map[row - 1][col] == comp || map[row - 1][col] == 4){
 				map[row - 1][col] = 1;
+			}else if(map[row - 1][col] == comp*100){
+				map[row - 1][col] = 3;
 			}
 		}
 		if(row + 1 < mapHeight){
-			if(map[row + 1][col] == 4){
+			if(map[row + 1][col] == comp || map[row + 1][col] == 4){
 				map[row + 1][col] = 1;
+			}else if(map[row + 1][col] == comp*100){
+				map[row + 1][col] = 3;
 			}
 		}
 		if(col - 1 > 0){
-			if(map[row][col - 1] == 4){
+			if(map[row][col - 1] == comp || map[row][col - 1] == 4){
 				map[row][col - 1] = 1;
+			}else if(map[row][col - 1] == comp*100){
+				map[row][col - 1] = 3;
 			}
 		}
 		if(col + 1 < mapWidth){
-			if(map[row][col + 1] == 4){
+			if(map[row][col + 1] == comp || map[row][col + 1] == 4){
 				map[row][col + 1] = 1;
+			}else if(map[row][col + 1] == comp*100){
+				map[row][col + 1] = 3;
 			}
 		}
 	}
 	
 	public void draw(Graphics2D g){
+		this.g = g;
 		int current;
 		for(int row = 0; row < mapHeight; row++){
 			for(int col = 0; col < mapWidth; col++){
 				current = map[row][col];
 				if(current == 0){
 					g.drawImage(hard_block, col*tileSize, row*tileSize, tileSize, tileSize, null);
-				}else if(current == 1){
+				}else if(current == 1 ){
 					g.drawImage(walkable, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}else if(current == 2){
 					g.drawImage(soft_block, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}else if(current == 3){
 					g.drawImage(bomb, col*tileSize, row*tileSize, tileSize, tileSize, null);
-				}else if(current == 4){
+				}else if(current >= 5){
 					g.drawImage(fire, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}
 			}
