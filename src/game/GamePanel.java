@@ -79,14 +79,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		int size = 48;
 		tileMap = new TileMap("assets/GameInit/tileMap.txt", size);
 		player = new Player(tileMap, size, size, size);
-		player2 = new Player(tileMap, size, size, size*11);
+		//player2 = new Player(tileMap, size, size, size*11);
 		monster = new Monster(tileMap, 5*size, size, size, size);
 	}
 	
 	public void update(){
 		tileMap.update();
 		player.update();
-		player2.update();
+		//player2.update();
 		monster.update();
 	}
 	
@@ -94,7 +94,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	public void render(){
 		tileMap.draw(g);
 		player.draw(g);
-		player2.draw(g);
+		//player2.draw(g);
 		monster.draw(g);
 	}
 	
@@ -121,7 +121,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			player.setBombed(true);
 		}
 		
-		if(keyCode == KeyEvent.VK_W){
+/*		if(keyCode == KeyEvent.VK_W){
 			player2.setUp(true);
 		}else if(keyCode == KeyEvent.VK_S){
 			player2.setDown(true);
@@ -131,7 +131,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			player2.setRight(true);
 		}else if(keyCode == KeyEvent.VK_Z){
 			player2.setBombed(true);
-		}
+		}*/
 	}
 	public void keyReleased(KeyEvent e){
 		
@@ -153,7 +153,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			player.setBombed(false);
 		}
 		
-		if(keyCode == KeyEvent.VK_W){
+/*		if(keyCode == KeyEvent.VK_W){
 			player2.setUp(false);
 		}else if(keyCode == KeyEvent.VK_S){
 			player2.setDown(false);
@@ -163,6 +163,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			player2.setRight(false);
 		}else if(keyCode == KeyEvent.VK_Z){
 			player2.setBombed(false);
-		}
+		}*/
 	}
 }

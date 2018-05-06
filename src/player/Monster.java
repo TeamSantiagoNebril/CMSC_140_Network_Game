@@ -40,7 +40,6 @@ public class Monster{
 		this.y = y;
 		this.width = width;
 		this.height = height;
-		
 		moveSpeed = 6;
 	}
 	

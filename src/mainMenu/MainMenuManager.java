@@ -36,13 +36,13 @@ public class MainMenuManager extends JFrame{
 		mainPanel = new MainMenuPanel(this);
 		
 		
-		OptionsPanel optionsPanel = new OptionsPanel();
-		optionsPanel.setBackground(Color.BLACK);
-		this.add(optionsPanel, BorderLayout.CENTER);
+		//OptionsPanel optionsPanel = new OptionsPanel();
+		//optionsPanel.setBackground(Color.BLACK);
+		//this.add(optionsPanel, BorderLayout.CENTER);
 		
 		
 		
-		//this.add(mainPanel, BorderLayout.CENTER);
+		this.add(mainPanel, BorderLayout.CENTER);
 		this.repaint();
 		this.setVisible(true);//Always execute this after all is loaded to avoid inconsistency
 	}
@@ -60,7 +60,7 @@ public class MainMenuManager extends JFrame{
 				this.pack();
 				gamePanel.requestFocusInWindow();
 				gamePanel.addNotify();							//start Thread
-				System.exit(0);
+				//System.exit(0);
 				break;
 			case 3:
 				break;
