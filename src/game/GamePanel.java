@@ -6,7 +6,7 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
-
+import java.util.Scanner;
 import javax.swing.JPanel;
 
 import player.Monster;
@@ -40,6 +40,19 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		setFocusable(true);
 		setVisible(true);
 		requestFocus();
+		
+		System.out.println("[1] Create game");
+		System.out.println("[2] Join");
+		System.out.print("Enter choice: ");
+		Scanner scan = new Scanner(System.in);
+		int choice = scan.nextInt();
+		switch(choice){
+			case 1:
+				System.out.println();
+				
+			case 2:
+				
+		}
 	}
 	
 	public void addNotify(){
