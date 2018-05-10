@@ -11,6 +11,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
+import player.Player;
+
 public class TileMap extends Thread{
 	private int x;
 	private int y;
@@ -52,6 +54,12 @@ public class TileMap extends Thread{
     private int softBlockBurnTracker = 0;
     private Image softBlockBurn;
     private Graphics2D g;
+    
+    private Player player1;
+    private Player player2;
+    private Player player3;
+    private Player player4;
+    
 	public TileMap(String file, int tileSize){
 		this.tileSize = tileSize;
 		this.start();
@@ -80,7 +88,7 @@ public class TileMap extends Thread{
 				}
 			}
 			
-			int[] pNumType = {510, 520, 530};
+			int[] pNumType = {520, 520, 520};
 			for(int counter = 0; counter < 3; counter++) {		 
 				for(int counter2 = 0; counter2 < 8; counter2++) {
 					powerupType.add(pNumType[counter]);
@@ -117,13 +125,21 @@ public class TileMap extends Thread{
 		 
 	}
 		 
+	
+	public void setPlayer(Player player1, Player player2, Player player3, Player player4) {
+		this.player1 = player1;
+		this.player2 = player2;
+		this.player3 = player3;
+		this.player4 = player4;
+	}
+	
+	
 	public int getPowerTile(int row, int col){
 		return powerupMap[row][col];
 	}
 		 	 
 	public ArrayList<Point> getPowerupLocations(){
-		return powerupLocations;
-		 
+		return powerupLocations; 
 	}
 		 
 	
@@ -144,7 +160,6 @@ public class TileMap extends Thread{
 				try {
 					Thread.sleep(110);
 				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
 			}
