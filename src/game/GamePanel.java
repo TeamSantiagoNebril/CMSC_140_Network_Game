@@ -9,7 +9,6 @@ import java.awt.image.BufferedImage;
 
 import javax.swing.JPanel;
 
-import player.Monster;
 import player.Player;
 import player.Player;
 
@@ -22,8 +21,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	private int FPS = 30;
 	private int targetTime = 1000/FPS;
 	private Player player;
-	private Player player2;
-	private Monster monster;
 	private TileMap tileMap;
 	
 	private BufferedImage bufferedImage;
@@ -34,6 +31,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	
 	public GamePanel(){
 		super();
+		System.out.println("bea");
 		width = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 		height = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
 		setPreferredSize(new Dimension(width, height));
@@ -110,6 +108,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		int keyCode = e.getKeyCode();
 		
 		if(keyCode == KeyEvent.VK_UP){
+			
 			player.setUp(true);
 		}else if(keyCode == KeyEvent.VK_DOWN){
 			player.setDown(true);
