@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.Graphics2D;
 import java.awt.event.KeyAdapter;
 import java.awt.event.KeyEvent;
+import java.awt.Point;
 import java.awt.event.KeyListener;
+import java.util.ArrayList;
 
 import game.TileMap;
 
@@ -15,7 +17,6 @@ public class Player {
 	private double dy;
 	private double tox;
 	private double toy;
-	private double moveSpeed;
 	private TileMap tileMap;
 	private int width;
 	private int height;
@@ -41,9 +42,13 @@ public class Player {
 	private double bombX;
 	private double bombY;
 	private boolean isAnimatingDeadImage;
-	public Player(){
-		
-	}
+	
+	private int maxBomb = 1;  
+	private double moveSpeed;
+	private ArrayList<Point> powerupLocations;
+	 
+	  public Player(){}
+	 
 	public Player(TileMap tileMap, int spriteSize, int x, int y){
 		this.tileMap = tileMap;
 		width = spriteSize;
@@ -56,6 +61,8 @@ public class Player {
 		startY = y;
 		
 		animation = new PlayerMovementAnimation(++playerNumber);
+		powerupLocations = tileMap.getPowerupLocations();
+		 
 	}
 	
 	public void setLeft(boolean bool){ left = bool; }
@@ -319,6 +326,35 @@ public class Player {
 				dy = 0;
 			}
 			
+		}
+	    
+		int x2 = (int)tileMap.getExactTileLocation(y);
+		int y2 = (int)tileMap.getExactTileLocation(x);
+		for(int i = 0; i < powerupLocations.size(); i++) {
+			//System.out.println("x: "+ x2 +" y: "+ y2 +" pX: " + powerupLocations.get(i).x + " py: "+ powerupLocations.get(i).y);
+			if(x2 == powerupLocations.get(i).x && y2 == powerupLocations.get(i).y) {
+				switch(tileMap.getPowerTile(x2, y2)) { 
+				case 511: //bomb_powerup;
+					if(maxBomb != 2) {
+						maxBomb++;
+					}
+					tileMap.normalizePowerTile(x2, y2);
+					powerupLocations.remove(i);
+					break;
+				case 521: //movespeed_powerup;
+					if(moveSpeed != 8.0) {
+						moveSpeed += 2.0;
+					}
+					tileMap.normalizePowerTile(x2, y2);
+					powerupLocations.remove(i);
+					break;
+				case 531: //flame powerup
+					tileMap.normalizePowerTile(x2, y2);
+					powerupLocations.remove(i);
+					System.out.println("fff");
+					break;
+				}
+			}
 		}
 	}
 	
