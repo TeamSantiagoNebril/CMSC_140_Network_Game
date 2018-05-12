@@ -14,6 +14,7 @@ import javax.swing.JPanel;
 
 import menuStates.MainMenuPanel;
 import menuStates.OptionsPanel;
+import networking.InitializeNetwork;
 
 public class MainMenuManager extends JFrame{
 	
@@ -55,7 +56,9 @@ public class MainMenuManager extends JFrame{
 				break;
 			case 2:
 				mainPanel.disappear(2);
+				
 				gamePanel = new GamePanel();
+				InitializeNetwork network = new InitializeNetwork(gamePanel);
 				this.setContentPane(gamePanel);
 				this.pack();
 				gamePanel.requestFocusInWindow();

@@ -23,6 +23,8 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	private int targetTime = 1000/FPS;
 	private Player player;
 	private Player player2;
+	private Player player3;
+	private Player player4;
 	private Monster monster;
 	private TileMap tileMap;
 	
@@ -32,40 +34,37 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	private int height;
 	private int width;
 	
+	private double initialPlayerX;
+	private double initialPlayerY;
 	public GamePanel(){
 		super();
 		width = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 		height = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-		setPreferredSize(new Dimension(width, height));
-		setFocusable(true);
-		setVisible(true);
-		requestFocus();
 		
-		System.out.println("[1] Create game");
-		System.out.println("[2] Join");
-		System.out.print("Enter choice: ");
-		Scanner scan = new Scanner(System.in);
-		int choice = scan.nextInt();
-		switch(choice){
-			case 1:
-				System.out.println();
-				
-			case 2:
-				
-		}
 	}
 	
 	public void addNotify(){
-		super.addNotify();     //Keano adto gin susuper?
+		super.addNotify();     
 		if(thread == null){
 			thread = new Thread(this);
 			thread.start();
 		}
 		addKeyListener(this);
+		setPreferredSize(new Dimension(width, height));
+		setFocusable(true);
+		setVisible(true);
+		requestFocus();
+	}
+	
+	public void setInitialPosition(double x, double y){
+		initialPlayerX = x;
+		initialPlayerY = y;
 	}
 	
 	public void run(){
-		init();
+
+		System.out.println("potaaaaaa");
+		
 		long startTime;
 		long waitTime;
 		long urdTime;
@@ -84,31 +83,31 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		}
 	}
 	
-	public void init(){
+	public void init(String initialPositions){
+		
 		running = true;
 		bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		g = (Graphics2D) bufferedImage.getGraphics();
 		
 		int size = 48;
 		tileMap = new TileMap("assets/GameInit/tileMap.txt", size);
-		player = new Player(tileMap, size, size, size);
-		player2 = new Player(tileMap, size, size, size*11);
-		monster = new Monster(tileMap, 5*size, size, size, size);
+		
+		String positions[] = initialPositions.split(",");
+		player = new Player(tileMap, size, Integer.parseInt(positions[0]), Integer.parseInt(positions[1]));
+		
 	}
 	
 	public void update(){
 		tileMap.update();
 		player.update();
-		player2.update();
-		monster.update();
+		
 	}
 	
 	
 	public void render(){
 		tileMap.draw(g);
 		player.draw(g);
-		player2.draw(g);
-		monster.draw(g);
+		
 	}
 	
 	public void draw(){
@@ -133,18 +132,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		}else if(keyCode == KeyEvent.VK_SPACE){
 			player.setBombed(true);
 		}
-		
-		if(keyCode == KeyEvent.VK_W){
-			player2.setUp(true);
-		}else if(keyCode == KeyEvent.VK_S){
-			player2.setDown(true);
-		}else if(keyCode == KeyEvent.VK_A){
-			player2.setLeft(true);
-		}else if(keyCode == KeyEvent.VK_D){
-			player2.setRight(true);
-		}else if(keyCode == KeyEvent.VK_Z){
-			player2.setBombed(true);
-		}
 	}
 	public void keyReleased(KeyEvent e){
 		
@@ -166,16 +153,5 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			player.setBombed(false);
 		}
 		
-		if(keyCode == KeyEvent.VK_W){
-			player2.setUp(false);
-		}else if(keyCode == KeyEvent.VK_S){
-			player2.setDown(false);
-		}else if(keyCode == KeyEvent.VK_A){
-			player2.setLeft(false);
-		}else if(keyCode == KeyEvent.VK_D){
-			player2.setRight(false);
-		}else if(keyCode == KeyEvent.VK_Z){
-			player2.setBombed(false);
-		}
 	}
 }
