@@ -9,6 +9,7 @@ import java.awt.image.BufferedImage;
 import java.util.Scanner;
 import javax.swing.JPanel;
 
+import networking.Client;
 import player.Monster;
 import player.Player;
 import player.Player;
@@ -28,12 +29,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	private Monster monster;
 	private TileMap tileMap;
 	
+	private Client controller;
 	private BufferedImage bufferedImage;
 	private Graphics2D g;
 	
 	private int height;
 	private int width;
-	
+	private boolean clicked = false;
 	private double initialPlayerX;
 	private double initialPlayerY;
 	public GamePanel(){
@@ -44,7 +46,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	}
 	
 	public void addNotify(){
-		super.addNotify();     
+		super.addNotify();
 		if(thread == null){
 			thread = new Thread(this);
 			thread.start();
@@ -62,9 +64,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	}
 	
 	public void run(){
-
-		System.out.println("potaaaaaa");
-		
 		long startTime;
 		long waitTime;
 		long urdTime;
@@ -94,19 +93,75 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		
 		String positions[] = initialPositions.split(",");
 		player = new Player(tileMap, size, Integer.parseInt(positions[0]), Integer.parseInt(positions[1]));
-		
+		player2 = new Player(tileMap, size, Integer.parseInt(positions[2]), Integer.parseInt(positions[3]));
+	}
+	
+	public void setController(Client controller){
+		this.controller = controller;
 	}
 	
 	public void update(){
 		tileMap.update();
-		player.update();
+		//player.update();
 		
+	}
+	
+	public void updatePositions(String updateCoordinates){
+		String positions[] = updateCoordinates.split(",");
+		player.update(Double.parseDouble(positions[0]), Double.parseDouble(positions[1]));
+		player2.update(Double.parseDouble(positions[2]), Double.parseDouble(positions[3]));
+		
+	}
+	
+	public void calculateUpdatePositions(String calculatePositions){
+		String message[] =  calculatePositions.split(" ");
+		if(message[0].equals("PLAYER1")){
+			setPlayerMove(player, Integer.parseInt(message[1]));
+			player.calculateMovement();
+		}else if(message[0].equals("PLAYER2")){
+			setPlayerMove(player2, Integer.parseInt(message[1]));
+			player2.calculateMovement();
+		}
+	}
+	
+	public void setPlayerMove(Player player, int move){
+		if(move == 1){
+			player.setUp(true);
+		}else if(move == 2){
+			player.setDown(true);
+		}else if(move == 3){
+			player.setLeft(true);
+		}else if(move == 4){
+			player.setRight(true);
+		}else if(move == 5){
+			player.setBombed(true);
+		}else if(move == 6){
+			player.setUp(false);
+		}else if(move == 7){
+			player.setDown(false);
+		}else if(move == 8){
+			player.setLeft(false);
+		}else if(move == 9){
+			player.setRight(false);
+		}else if(move == 10){
+			player.setBombed(false);
+		}
+	}
+	
+	public String getPlayerCoordinates(String playerName){
+		if(playerName.equals("PLAYER1")){
+			return player.getUpdatedCoordinates();
+		}else if(playerName.equals("PLAYER2")){
+			return player2.getUpdatedCoordinates();
+		}
+		return "";
 	}
 	
 	
 	public void render(){
 		tileMap.draw(g);
 		player.draw(g);
+		player2.draw(g);
 		
 	}
 	
@@ -116,21 +171,34 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		g2.dispose();
 	}
 	
-	public void keyTyped(KeyEvent e){}
+	public void keyTyped(KeyEvent e){
+	}
 	public void keyPressed (KeyEvent e){
 		
 		int keyCode = e.getKeyCode();
 		
 		if(keyCode == KeyEvent.VK_UP){
-			player.setUp(true);
+			if(!clicked){
+				controller.requestMovementUpdate(1);
+				clicked = true;
+			}
 		}else if(keyCode == KeyEvent.VK_DOWN){
-			player.setDown(true);
+			if(!clicked){
+				controller.requestMovementUpdate(2);
+				clicked = true;
+			}
 		}else if(keyCode == KeyEvent.VK_LEFT){
-			player.setLeft(true);
+			if(!clicked){
+				controller.requestMovementUpdate(3);
+				clicked = true;
+			}
 		}else if(keyCode == KeyEvent.VK_RIGHT){
-			player.setRight(true);
+			if(!clicked){
+				controller.requestMovementUpdate(4);
+				clicked = true;
+			}
 		}else if(keyCode == KeyEvent.VK_SPACE){
-			player.setBombed(true);
+			controller.requestMovementUpdate(5);
 		}
 	}
 	public void keyReleased(KeyEvent e){
@@ -138,19 +206,19 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		int keyCode = e.getKeyCode();
 		
 		if(keyCode == KeyEvent.VK_UP){
-			player.setUp(false);
-			player.setdy(0);
+			clicked = false;
+			controller.requestMovementUpdate(6);
 		}else if(keyCode == KeyEvent.VK_DOWN){
-			player.setDown(false);
-			player.setdy(0);
+			clicked = false;
+			controller.requestMovementUpdate(7);
 		}else if(keyCode == KeyEvent.VK_LEFT){
-			player.setLeft(false);
-			player.setdx(0);
+			clicked = false;
+			controller.requestMovementUpdate(8);
 		}else if(keyCode == KeyEvent.VK_RIGHT){
-			player.setRight(false);
-			player.setdx(0);
+			clicked = false;
+			controller.requestMovementUpdate(9);
 		}else if(keyCode == KeyEvent.VK_SPACE){
-			player.setBombed(false);
+			controller.requestMovementUpdate(10);
 		}
 		
 	}

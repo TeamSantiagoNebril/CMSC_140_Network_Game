@@ -28,12 +28,12 @@ public class InitializeNetwork {
 				try {
 					hostIP = InetAddress.getLocalHost().getHostAddress();
 					Server server = new Server(portNumberInput, gamePanel);
-					server.addNotify();
-					//client = new Client(hostIP, portNumberInput, portNumberInput - 1, gamePanel);
+					client = new Client(hostIP, portNumberInput, portNumberInput - 1, gamePanel);
 					break;
 				} catch (UnknownHostException e) {
 					e.printStackTrace();
 				}
+				
 			case 2:
 				System.out.print("Enter port number: ");
 				portNumberInput = scan.nextInt();

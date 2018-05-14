@@ -106,13 +106,6 @@ public class TileMap extends Thread{
 		        powerupRandomizerVariable.remove(position);
 		        powerupType.remove(pValue);
 			}
-		 
-			for(int row = 0; row < mapHeight; row++){
-				for(int col = 0; col < mapWidth; col++){
-					System.out.print(powerupMap[row][col]);
-				}
-				System.out.println();
-			}
 
 		}catch(FileNotFoundException e){
 			System.err.println("File Not Found");

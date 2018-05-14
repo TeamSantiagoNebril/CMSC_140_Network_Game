@@ -11,12 +11,21 @@ public class Client extends UDPNetwork{
 	private String hostIPAddress;
 	private int hostPortNumber;
 	private int portNumber;
+	private GamePanel gamePanel;
+	private String ipAddress;
 	public Client(String hostIPAddress, int hostPortNumber, int portNumber, GamePanel gamePanel){
 		this.hostIPAddress = hostIPAddress;
 		this.hostPortNumber = hostPortNumber;
 		this.portNumber = portNumber;
+		this.gamePanel = gamePanel;
+		try {
+			ipAddress = InetAddress.getLocalHost().getHostAddress();
+		} catch (UnknownHostException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
 		
-		send(hostIPAddress, hostPortNumber, "JOIN " + portNumber);
+		send(hostIPAddress, hostPortNumber, "JOIN " + portNumber + " " + ipAddress);
 		
 		
 		String received[] = receive(portNumber).split(" ");
@@ -27,15 +36,19 @@ public class Client extends UDPNetwork{
 		send(hostIPAddress, hostPortNumber, "READY");
 		
 		while(true){
-			System.out.println(portNumber);
 			String received2[] = receive(portNumber).split(" ");
 			if(received2[0].equals("START_GAME")){
 				break;
 			}
 		}
-		
-		
+		gamePanel.setController(this);
+		ClientReceive clientReceive = new ClientReceive(portNumber, gamePanel);
+		clientReceive.addNotify();
 	}
 	
+	public void requestMovementUpdate(int move){
+		send(hostIPAddress, hostPortNumber, ("UPDATE_POSITION " + move + " " + ipAddress + portNumber));
+	}
+
 	
 }
