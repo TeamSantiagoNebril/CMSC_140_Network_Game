@@ -10,7 +10,7 @@ import java.util.ArrayList;
 
 import game.TileMap;
 
-public class Player {
+public class Player{
 	private double calculatedX;
 	private double calculatedY;
 	private double x;
@@ -57,7 +57,7 @@ public class Player {
 		this.tileMap = tileMap;
 		width = spriteSize;
 		height = spriteSize;
-		moveSpeed = 6;
+		moveSpeed = 3;
 		
 		this.x = x;
 		this.y = y;
@@ -80,6 +80,8 @@ public class Player {
 	public void setDown(boolean bool){ 
 		down = bool; }
 	public void setBombed(boolean bool){
+		System.out.println("dafuck");
+		
 		bombLocation = true;
 		if(!isBombed && bool || isBombed && !bool){
 			isBombed = bool;
@@ -157,8 +159,7 @@ public class Player {
 					bombX = calculatedX;
 					bombY = calculatedY;
 				}
-			}else 
-		if (up || down || left || right){
+			}else if (up || down || left || right){
 				clicked = false;
 
 				tempx = 0;
@@ -288,7 +289,7 @@ public class Player {
 							toy = tempy;
 						}
 
-						if(checkDominance() && calculateDestination((int)tox, (int)toy) == 1 && calculateDestination((int)tox + width - 1, (int)toy + height - 1) == 1){
+						if(checkDominance() && calculateDestination((int)tox, (int)toy) == 1 && calculateDestination((int)tox + width - 1, (int)toy + height - 1) == 1 ){
 							calculatedX = tempx;
 							calculatedY = tempy;
 						}else{

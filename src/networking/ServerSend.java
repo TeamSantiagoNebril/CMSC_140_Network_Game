@@ -20,10 +20,11 @@ public class ServerSend extends UDPNetwork implements Runnable{
 		while(true){
 			String coordinates = gamePanel.getPlayerCoordinates("PLAYER1");
 			coordinates += gamePanel.getPlayerCoordinates("PLAYER2");
+			
 			send(playersIP[0], playersPortNumber[0], ("UPDATE_POSITION " + coordinates));
 			send(playersIP[1], playersPortNumber[1], ("UPDATE_POSITION " + coordinates));
 			try {
-				Thread.sleep(10);
+				Thread.sleep(15);
 			} catch (InterruptedException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

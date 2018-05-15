@@ -31,6 +31,7 @@ public class Server extends UDPNetwork implements Runnable {
 			if(receivedString[0].equals("JOIN")){
 				playersPortNumber[a] = Integer.parseInt(receivedString[1]);
 				playersIP[a] = receivedString[2];
+				System.out.println(playersIP[a]);
 				a++;
 			}
 		}
@@ -60,13 +61,14 @@ public class Server extends UDPNetwork implements Runnable {
 		for(a = 0; a < 2; a++){
 			//System.out.println(playersIP[a] + " " + playersPortNumber[a]);
 			send(playersIP[a], playersPortNumber[a], "START_GAME");
+			System.out.println(playersIP[a]);
 		}
 		
 		ServerSend serverSend = new ServerSend(playersIP, playersPortNumber, gamePanel);
 		serverSend.addNotify();
 		
 		try {
-			Thread.sleep(10);
+			Thread.sleep(300);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -83,7 +85,7 @@ public class Server extends UDPNetwork implements Runnable {
 								while(player1Walking){
 									gamePanel.calculateUpdatePositions("PLAYER1 " + receivedString[1]);
 									try {
-										Thread.sleep(30);
+										Thread.sleep(15);
 									} catch (InterruptedException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
@@ -93,8 +95,9 @@ public class Server extends UDPNetwork implements Runnable {
 								player2Walking = true;
 								while(player2Walking){
 									gamePanel.calculateUpdatePositions("PLAYER2 " + receivedString[1]);
+
 									try {
-										Thread.sleep(30);
+										Thread.sleep(15);
 									} catch (InterruptedException e) {
 										// TODO Auto-generated catch block
 										e.printStackTrace();
@@ -105,7 +108,6 @@ public class Server extends UDPNetwork implements Runnable {
 					}.start();
 				}else{
 					if(receivedString[2].equals(playersIP[0] + playersPortNumber[0])){
-						
 						player1Walking = false;
 						gamePanel.calculateUpdatePositions("PLAYER1 " + receivedString[1]);
 					}else if(receivedString[2].equals(playersIP[1] + playersPortNumber[1])){
@@ -116,6 +118,4 @@ public class Server extends UDPNetwork implements Runnable {
 			}
 		}
 	}
-	
-	
 }

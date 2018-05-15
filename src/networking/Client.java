@@ -42,9 +42,11 @@ public class Client extends UDPNetwork{
 			}
 		}
 		gamePanel.setController(this);
-		ClientReceive clientReceive = new ClientReceive(portNumber, gamePanel);
+		ClientReceive clientReceive = new ClientReceive(portNumber, gamePanel, hostIPAddress, hostPortNumber);
 		clientReceive.addNotify();
 	}
+	
+	
 	
 	public void requestMovementUpdate(int move){
 		send(hostIPAddress, hostPortNumber, ("UPDATE_POSITION " + move + " " + ipAddress + portNumber));
