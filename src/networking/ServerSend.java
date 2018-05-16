@@ -31,4 +31,11 @@ public class ServerSend extends UDPNetwork implements Runnable{
 			}
 		}
 	}
+	
+	public void sendBomb(String message){
+
+		send(playersIP[0], playersPortNumber[0], ("BOMB " + message));
+		send(playersIP[1], playersPortNumber[1], ("BOMB " + message));
+		
+	}
 }

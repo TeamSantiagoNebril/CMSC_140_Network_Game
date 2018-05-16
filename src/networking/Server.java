@@ -68,7 +68,7 @@ public class Server extends UDPNetwork implements Runnable {
 		serverSend.addNotify();
 		
 		try {
-			Thread.sleep(300);
+			Thread.sleep(200);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -114,6 +114,12 @@ public class Server extends UDPNetwork implements Runnable {
 						player2Walking = false;
 						gamePanel.calculateUpdatePositions("PLAYER2 " + receivedString[1]);
 					}
+				}
+			}else if(receivedString[0].equals("BOMB")){
+				if(receivedString[1].equals(playersIP[0] + playersPortNumber[0])){
+					serverSend.sendBomb("PLAYER1");
+				}else if(receivedString[1].equals(playersIP[1] + playersPortNumber[1])){
+					serverSend.sendBomb("PLAYER2");
 				}
 			}
 		}

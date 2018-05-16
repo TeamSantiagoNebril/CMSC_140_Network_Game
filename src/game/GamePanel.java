@@ -111,6 +111,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		String positions[] = updateCoordinates.split(",");
 		player.update(Double.parseDouble(positions[0]), Double.parseDouble(positions[1]));
 		player2.update(Double.parseDouble(positions[2]), Double.parseDouble(positions[3]));
+		
 	}
 	
 	public void calculateUpdatePositions(String calculatePositions){
@@ -133,8 +134,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			player.setLeft(true);
 		}else if(move == 4){
 			player.setRight(true);
-		}else if(move == 5){
-			player.setBombed(true);
 		}else if(move == 6){
 			player.setUp(false);
 		}else if(move == 7){
@@ -143,13 +142,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			player.setLeft(false);
 		}else if(move == 9){
 			player.setRight(false);
-		}else if(move == 10){
-			player.setBombed(false);
 		}
-	}
-	
-	public void playerBomb(int col, int row){
-		
 	}
 	
 	public String getPlayerCoordinates(String playerName){
@@ -161,6 +154,13 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		return "";
 	}
 	
+	public void setPlayerBomb(String message){
+		if(message.equals("PLAYER1")){
+			player.setBombed();
+		}else if(message.equals("PLAYER2")){
+			player2.setBombed();
+		}
+	}
 	
 	public void render(){
 		tileMap.draw(g);
@@ -182,31 +182,27 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		int keyCode = e.getKeyCode();
 		
 		if(keyCode == KeyEvent.VK_UP){
-			if(!clicked || lastClicked != 1){
+			if(!clicked){
 				controller.requestMovementUpdate(1);
-				lastClicked = 1;
 				clicked = true;
 			}
 		}else if(keyCode == KeyEvent.VK_DOWN){
-			if(!clicked || lastClicked != 2){
+			if(!clicked){
 				controller.requestMovementUpdate(2);
-				lastClicked = 2;
 				clicked = true;
 			}
 		}else if(keyCode == KeyEvent.VK_LEFT){
-			if(!clicked || lastClicked != 3){
+			if(!clicked){
 				controller.requestMovementUpdate(3);
-				lastClicked = 3;
 				clicked = true;
 			}
 		}else if(keyCode == KeyEvent.VK_RIGHT){
-			if(!clicked || lastClicked != 4){
+			if(!clicked){
 				controller.requestMovementUpdate(4);
-				lastClicked = 4;
 				clicked = true;
 			}
 		}else if(keyCode == KeyEvent.VK_SPACE){
-			controller.requestMovementUpdate(5);
+			controller.requestBomb();
 		}
 	}
 	public void keyReleased(KeyEvent e){
@@ -226,7 +222,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			clicked = false;
 			controller.requestMovementUpdate(9);
 		}else if(keyCode == KeyEvent.VK_SPACE){
-			controller.requestMovementUpdate(10);
+			//controller.requestBomb();
 		}
 		
 	}

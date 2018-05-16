@@ -52,5 +52,8 @@ public class Client extends UDPNetwork{
 		send(hostIPAddress, hostPortNumber, ("UPDATE_POSITION " + move + " " + ipAddress + portNumber));
 	}
 
+	public void requestBomb(){
+		send(hostIPAddress, hostPortNumber, ("BOMB " + ipAddress + portNumber));
+	}
 	
 }

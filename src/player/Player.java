@@ -79,12 +79,15 @@ public class Player{
 		up = bool; }
 	public void setDown(boolean bool){ 
 		down = bool; }
-	public void setBombed(boolean bool){
-		System.out.println("dafuck");
-		
+	public void setBombed(){
+
 		bombLocation = true;
-		if(!isBombed && bool || isBombed && !bool){
-			isBombed = bool;
+		if(lastdx != 0){
+			putBombHorizontal((int)x, (int)y);
+
+		}else if(lastdy != 0){
+			putBombVertical((int)x, (int)y);
+
 		}
 	}
 	
@@ -112,12 +115,21 @@ public class Player{
 		double dx = x - this.x;
 		double dy = y - this.y;
 		if(dy < 0){  // for bomberman sprite
+			lastdx = 0;
+			lastdy = -moveSpeed;
 			animation.setMove(1);
 		}else if(dy > 0){
+			lastdx = 0;
+			lastdy = moveSpeed;
 			animation.setMove(2);
 		}else if(dx > 0){
+			
+			lastdx = moveSpeed;
+			lastdy = 0;
 			animation.setMove(3);
 		}else if(dx < 0){
+			lastdx = -moveSpeed;
+			lastdy = 0;
 			faceleft = true;
 			animation.setMove(3);
 		}else{
@@ -148,18 +160,7 @@ public class Player{
 				}				
 			}.start();
 		}else if(!isAnimatingDeadImage){
-			if(isBombed){
-				isBombed = false;
-				if(lastdx != 0){
-					putBombHorizontal((int)calculatedX, (int)calculatedY);
-					bombX = calculatedX;
-					bombY = calculatedY;
-				}else if(lastdy != 0){
-					putBombVertical((int)calculatedX, (int)calculatedY);
-					bombX = calculatedX;
-					bombY = calculatedY;
-				}
-			}else if (up || down || left || right){
+			if (up || down || left || right){
 				clicked = false;
 
 				tempx = 0;
@@ -402,6 +403,8 @@ public class Player{
 			row = tileMap.getRowTile(y);
 			tileMap.putBomb(col, row);
 		}
+		bombX = col*width;
+		bombY = row*height;
 	}
 	public int checkDominanceParams(){  //to return kun 70 percent or 30 percent han tile an kailangan igkita
 		if(((up || down) && lastMove == 4) || ((right || left) && lastMove == 1)){
@@ -445,6 +448,8 @@ public class Player{
 			row = tileMap.getRowTile(y + height);
 			tileMap.putBomb(col, row);
 		}
+		bombX = col*width;
+		bombY = row*height;
 	}
 	
 	public void setdx(double a){
