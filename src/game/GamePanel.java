@@ -103,7 +103,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	
 	public void update(){
 		tileMap.update();
-		//player.update();
 		
 	}
 	

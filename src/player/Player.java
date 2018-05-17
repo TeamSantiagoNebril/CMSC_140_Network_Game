@@ -338,7 +338,6 @@ public class Player{
 				}
 			}
 			
-			
 			if(up || down){
 				if(bombLocation && (int)tileMap.getExactTileLocation(calculatedY) != (int)tileMap.getExactTileLocation(bombY) && (int)tileMap.getExactTileLocation(calculatedY + height - 1) != (int)tileMap.getExactTileLocation(bombY)){
 					bombLocation = false;
@@ -372,8 +371,8 @@ public class Player{
 					powerupLocations.remove(i);
 					break;
 				case 521: //movespeed_powerup;
-					if(moveSpeed != 8.0) {
-						moveSpeed += 2.0;
+					if(moveSpeed < 4.0) {
+						moveSpeed += 1.0;
 					}
 					tileMap.normalizePowerTile(x2, y2);
 					powerupLocations.remove(i);
