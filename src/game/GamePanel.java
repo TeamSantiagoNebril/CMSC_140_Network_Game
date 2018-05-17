@@ -154,11 +154,43 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		return "";
 	}
 	
-	public void setPlayerBomb(String message){
+	public void calculatePlayerBomb(String message){
 		if(message.equals("PLAYER1")){
-			player.setBombed();
+			player.calculateBomb();
 		}else if(message.equals("PLAYER2")){
-			player2.setBombed();
+			player2.calculateBomb();
+		}
+	}
+	
+	public String getCalculatedPlayerBomb(String playerName){
+		String temp = "";
+		if(playerName.equals("PLAYER1")){
+			temp = player.getBombCoordinates();
+			System.out.println(temp + "ola");
+			if(temp.length() != 0)
+				return "PLAYER1 " + temp;
+		}else if(playerName.equals("PLAYER2")){
+			temp = player2.getBombCoordinates();
+			if(temp.length() != 0)
+				return "PLAYER2 " + temp;
+		}
+		return "";
+	}
+	
+	public void setBombLocation(String message[]){
+		int a = 1;
+		for(int b = 0; b < message.length; b++){
+			System.out.println(message[b]);
+		}
+		while(a < message.length){
+			if(message[a].equals("PLAYER1")){
+				
+				player.putBomb(Integer.parseInt(message[a + 1]), Integer.parseInt(message[a + 2]));
+				a += 3;
+			}else if(message[a].equals("PLAYER2")){
+				player2.putBomb(Integer.parseInt(message[a + 1]), Integer.parseInt(message[a + 2]));
+				a += 3;
+			}
 		}
 	}
 	

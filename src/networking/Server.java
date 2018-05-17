@@ -67,12 +67,12 @@ public class Server extends UDPNetwork implements Runnable {
 		ServerSend serverSend = new ServerSend(playersIP, playersPortNumber, gamePanel);
 		serverSend.addNotify();
 		
-		try {
-			Thread.sleep(200);
+		/*try {
+			Thread.sleep(300);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
-		}
+		}*/
 		
 		while(true){
 			String receivedString[] = receive(portNumber).split(" ");
@@ -116,11 +116,16 @@ public class Server extends UDPNetwork implements Runnable {
 					}
 				}
 			}else if(receivedString[0].equals("BOMB")){
-				if(receivedString[1].equals(playersIP[0] + playersPortNumber[0])){
-					serverSend.sendBomb("PLAYER1");
-				}else if(receivedString[1].equals(playersIP[1] + playersPortNumber[1])){
-					serverSend.sendBomb("PLAYER2");
-				}
+				new Thread(){
+					public void run(){
+						if(receivedString[1].equals(playersIP[0] + playersPortNumber[0])){
+							gamePanel.calculatePlayerBomb("PLAYER1");
+						}else if(receivedString[1].equals(playersIP[1] + playersPortNumber[1])){
+							gamePanel.calculatePlayerBomb("PLAYER2");
+						}
+						serverSend.sendBomb();
+					}
+				}.start();
 			}
 		}
 	}

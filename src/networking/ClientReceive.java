@@ -24,7 +24,7 @@ public class ClientReceive extends UDPNetwork implements Runnable{
 			if(receivedString[0].equals("UPDATE_POSITION")){
 				gamePanel.updatePositions(receivedString[1]);
 			}else if(receivedString[0].equals("BOMB")){
-				gamePanel.setPlayerBomb(receivedString[1]);
+				gamePanel.setBombLocation(receivedString);
 			}
 		}
 	}

@@ -45,6 +45,8 @@ public class Player{
 	private double bombY;
 	private boolean isAnimatingDeadImage;
 	
+	private String bombCoordinates = "";
+	
 	private int maxBomb = 1;  
 	private double moveSpeed;
 	private int flameMultiplier;
@@ -79,16 +81,20 @@ public class Player{
 		up = bool; }
 	public void setDown(boolean bool){ 
 		down = bool; }
-	public void setBombed(){
-
-		bombLocation = true;
+	public void calculateBomb(){
 		if(lastdx != 0){
-			putBombHorizontal((int)x, (int)y);
+			bombCoordinates = putBombHorizontal((int)x, (int)y);
 
 		}else if(lastdy != 0){
-			putBombVertical((int)x, (int)y);
-
+			bombCoordinates = putBombVertical((int)x, (int)y);
 		}
+	}
+	
+	public String getBombCoordinates(){
+		String temp = bombCoordinates;
+		bombCoordinates = "";
+		System.out.println(temp);
+		return temp;
 	}
 	
 	public int calculateDestination(double x, double y){
@@ -221,8 +227,7 @@ public class Player{
 				}
 
 				if(calculateDestination(tempx, tempy) == 1 && calculateDestination(tempx2, tempy2) == 1 ||
-						(calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx2, tempy2) >= 4) || 
-						(calculateDestination(tempx, tempy) >= 2 && calculateDestination(tempx2, tempy2) >= 2)|| allow){ //is tile walkable
+						(calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx2, tempy2) >= 4) ||allow){ //is tile walkable
 					
 					//System.out.println("hay hooo!");
 					calculatedX = tox;
@@ -390,22 +395,42 @@ public class Player{
 		return calculatedX + "," + calculatedY + ",";
 	}
 	
-	public void putBombHorizontal(int x, int y){
+	public String putBombHorizontal(int x, int y){
 		double dominance = tileMap.getExactTileLocation(x) - (int)tileMap.getExactTileLocation(x);
 		int col;
 		int row;
 		if(dominance < 0.5){
 			col = tileMap.getColTile(x);
 			row = tileMap.getRowTile(y);
-			tileMap.putBomb(col, row);
 		}else{
 			col = tileMap.getColTile(x + width);
 			row = tileMap.getRowTile(y);
-			tileMap.putBomb(col, row);
 		}
+		return col + " " + row + " ";
+	}
+	
+	public String putBombVertical(int x, int y){
+		double dominance = tileMap.getExactTileLocation(y) - (int)tileMap.getExactTileLocation(y);
+		int col;
+		int row;
+		if(dominance < 0.5){
+			col = tileMap.getColTile(x);
+			row = tileMap.getRowTile(y);
+		}else{
+			col = tileMap.getColTile(x);
+			row = tileMap.getRowTile(y + height);
+		}
+		return col + " " + row + " ";
+		
+	}
+	
+	public void putBomb(int col, int row){
+		bombLocation = true;
+		tileMap.putBomb(col, row);
 		bombX = col*width;
 		bombY = row*height;
 	}
+	
 	public int checkDominanceParams(){  //to return kun 70 percent or 30 percent han tile an kailangan igkita
 		if(((up || down) && lastMove == 4) || ((right || left) && lastMove == 1)){
 			return 70;
@@ -433,23 +458,6 @@ public class Player{
 			return true;
 		}
 		return false;
-	}
-	
-	public void putBombVertical(int x, int y){
-		double dominance = tileMap.getExactTileLocation(y) - (int)tileMap.getExactTileLocation(y);
-		int col;
-		int row;
-		if(dominance < 0.5){
-			col = tileMap.getColTile(x);
-			row = tileMap.getRowTile(y);
-			tileMap.putBomb(col, row);
-		}else{
-			col = tileMap.getColTile(x);
-			row = tileMap.getRowTile(y + height);
-			tileMap.putBomb(col, row);
-		}
-		bombX = col*width;
-		bombY = row*height;
 	}
 	
 	public void setdx(double a){

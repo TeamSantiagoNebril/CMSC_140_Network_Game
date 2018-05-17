@@ -23,6 +23,7 @@ public class ServerSend extends UDPNetwork implements Runnable{
 			
 			send(playersIP[0], playersPortNumber[0], ("UPDATE_POSITION " + coordinates));
 			send(playersIP[1], playersPortNumber[1], ("UPDATE_POSITION " + coordinates));
+			
 			try {
 				Thread.sleep(15);
 			} catch (InterruptedException e) {
@@ -32,10 +33,11 @@ public class ServerSend extends UDPNetwork implements Runnable{
 		}
 	}
 	
-	public void sendBomb(String message){
-
-		send(playersIP[0], playersPortNumber[0], ("BOMB " + message));
-		send(playersIP[1], playersPortNumber[1], ("BOMB " + message));
-		
+	public void sendBomb(){
+		String bombCoordinates = gamePanel.getCalculatedPlayerBomb("PLAYER1");
+		bombCoordinates += gamePanel.getCalculatedPlayerBomb("PLAYER2");
+		send(playersIP[0], playersPortNumber[0], ("BOMB " + bombCoordinates));
+		send(playersIP[1], playersPortNumber[1], ("BOMB " + bombCoordinates));
 	}
+
 }
