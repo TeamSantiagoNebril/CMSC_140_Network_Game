@@ -93,7 +93,6 @@ public class Player{
 	public String getBombCoordinates(){
 		String temp = bombCoordinates;
 		bombCoordinates = "";
-		System.out.println(temp);
 		return temp;
 	}
 	
@@ -147,7 +146,7 @@ public class Player{
 
 	}
 	
-	public void calculateMovement(){
+	public void deadPlayer(){
 		if(isDead((int)calculatedX, (int)calculatedY) && !isAnimatingDeadImage || isDead((int)calculatedX, (int)calculatedY + height - 1) && !isAnimatingDeadImage ||
 				isDead((int)calculatedX + width - 1, (int)calculatedY) && !isAnimatingDeadImage ){
 			new Thread(){
@@ -165,7 +164,14 @@ public class Player{
 					dead();
 				}				
 			}.start();
-		}else if(!isAnimatingDeadImage){
+		}
+	}
+	
+	public void calculateMovement(){
+		String testing = "";
+		double tempCalX = calculatedX;
+		double tempCalY = calculatedY;
+		if(!isAnimatingDeadImage){
 			if (up || down || left || right){
 				clicked = false;
 
@@ -229,7 +235,8 @@ public class Player{
 				if(calculateDestination(tempx, tempy) == 1 && calculateDestination(tempx2, tempy2) == 1 ||
 						(calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx2, tempy2) >= 4) ||allow){ //is tile walkable
 					
-					//System.out.println("hay hooo!");
+					testing = "first";
+					
 					calculatedX = tox;
 					calculatedY = toy;
 					if(clicked){
@@ -252,52 +259,53 @@ public class Player{
 						dy = 0;
 					}else{
 						
-						
 						if(lastdx < 0){
 							faceleft = true;
 						}
-
 						tempx = calculatedX;
 						tempy = calculatedY;
-						tox = tempx;
-						toy = tempy;
+						
+						tox = calculatedX;
+						toy = calculatedY;
 						if((up || down) && lastMove == 4){
-							tempx = calculatedX + (width - (calculatedX % width));
+							tox = calculatedX + (width - (calculatedX % width));
 							if(up){
-								toy = tempy - moveSpeed;
+								toy -= moveSpeed;
 							}else{
-								toy = tempy + moveSpeed;
+								toy += moveSpeed;
 							}
-							tox = tempx;
+							tempx += moveSpeed;
 						}else if((up || down) && lastMove == 3){
-							tempx = calculatedX - (calculatedX % width);
+							tox = calculatedX - (calculatedX % width);
 							if(up){
-								toy = tempy - moveSpeed;
+								toy -= moveSpeed;
 							}else{
-								toy = tempy + moveSpeed;
+								toy += moveSpeed;
 							}
-							tox = tempx;
+							tempx -= moveSpeed;
 						}else if((right || left) && lastMove == 1){
-							tempy = calculatedY + (height - (calculatedY % height));
+							toy = calculatedY + (height - (calculatedY % height));
 							if(left){
-								tox = tempx - moveSpeed;
+								tox -= moveSpeed;
 							}else{
-								tox = tempx + moveSpeed;
+								tox += moveSpeed;
 							}
-							toy = tempy;
+							tempy += moveSpeed;
 						}else if((right || left) && lastMove == 2){
-							tempy = calculatedY - (calculatedY % height);
+							toy = calculatedY - (calculatedY % height);
 							if(left){
-								tox = tempx - moveSpeed;
+								tox -= moveSpeed;
 							}else{
-								tox = tempx + moveSpeed;
+								tox += moveSpeed;
 							}
-							toy = tempy;
+							tempy -= moveSpeed;
 						}
 
 						if(checkDominance() && calculateDestination((int)tox, (int)toy) == 1 && calculateDestination((int)tox + width - 1, (int)toy + height - 1) == 1 ){
 							calculatedX = tempx;
 							calculatedY = tempy;
+							testing = "second";
+
 						}else{
 							tox = calculatedX + lastdx;
 							toy = calculatedY + lastdy;
@@ -329,6 +337,7 @@ public class Player{
 									(calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx2, tempy2) >= 4)){ //is tile walkable
 								calculatedX = tox;
 								calculatedY = toy;
+								testing = "third";
 							}else{
 								dx = 0;
 								dy = 0;
@@ -358,7 +367,17 @@ public class Player{
 			}
 		}
 
-		int x2 = (int)tileMap.getExactTileLocation(calculatedY);
+
+			if(tempCalX - calculatedX < -3 || tempCalX - calculatedX > 3){
+				System.out.println("pota yawa nimeroy");
+				System.out.println(testing);
+			}
+			if(tempCalY - calculatedY < -3 || tempCalY - calculatedY > 3){
+				System.out.println("pota yawa nimeroy part 2: " + (tempCalY - calculatedY));
+				System.out.println(testing);
+			}
+		
+		/*int x2 = (int)tileMap.getExactTileLocation(calculatedY);
 		int y2 = (int)tileMap.getExactTileLocation(calculatedX);
 		for(int i = 0; i < powerupLocations.size(); i++) {
 			if(x2 == powerupLocations.get(i).x && y2 == powerupLocations.get(i).y) {
@@ -387,7 +406,7 @@ public class Player{
 					break;
 				}
 			}
-		}		
+		}*/		
 	}
 	
 	public String getUpdatedCoordinates(){

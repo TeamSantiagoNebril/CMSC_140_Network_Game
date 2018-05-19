@@ -22,7 +22,7 @@ public class ClientReceive extends UDPNetwork implements Runnable{
 		while(true){
 			String receivedString[] = receive(portNumber).split(" ");
 			if(receivedString[0].equals("UPDATE_POSITION")){
-				System.out.println("receive: " + receivedString[1]);
+				//System.out.println(receivedString[1]);
 				gamePanel.updatePositions(receivedString[1]);
 			}else if(receivedString[0].equals("BOMB")){
 				gamePanel.setBombLocation(receivedString);

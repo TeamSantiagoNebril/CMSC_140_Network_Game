@@ -31,7 +31,6 @@ public class Server extends UDPNetwork implements Runnable {
 			if(receivedString[0].equals("JOIN")){
 				playersPortNumber[a] = Integer.parseInt(receivedString[1]);
 				playersIP[a] = receivedString[2];
-				System.out.println(playersIP[a]);
 				a++;
 			}
 		}
@@ -59,16 +58,14 @@ public class Server extends UDPNetwork implements Runnable {
 		}
 	
 		for(a = 0; a < 2; a++){
-			//System.out.println(playersIP[a] + " " + playersPortNumber[a]);
 			send(playersIP[a], playersPortNumber[a], "START_GAME");
-			System.out.println(playersIP[a]);
 		}
 		
 		ServerSend serverSend = new ServerSend(playersIP, playersPortNumber, gamePanel);
 		serverSend.addNotify();
 		
 		/*try {
-			Thread.sleep(300);
+			Thread.sleep(100);
 		} catch (InterruptedException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

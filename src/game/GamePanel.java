@@ -165,7 +165,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		String temp = "";
 		if(playerName.equals("PLAYER1")){
 			temp = player.getBombCoordinates();
-			System.out.println(temp + "ola");
 			if(temp.length() != 0)
 				return "PLAYER1 " + temp;
 		}else if(playerName.equals("PLAYER2")){
@@ -179,7 +178,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	public void setBombLocation(String message[]){
 		int a = 1;
 		for(int b = 0; b < message.length; b++){
-			System.out.println(message[b]);
 		}
 		while(a < message.length){
 			if(message[a].equals("PLAYER1")){

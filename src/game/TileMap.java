@@ -199,8 +199,6 @@ public class TileMap extends Thread{
 			flameIdentifier = 5;
 		}
 		if(isBombed){
-			System.out.println("pota la");
-			
 			int threadRow = bombRow;
 			int threadCol = bombCol;
 			new Thread(){
