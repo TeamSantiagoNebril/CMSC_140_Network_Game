@@ -46,6 +46,7 @@ public class Player{
 	private boolean isAnimatingDeadImage;
 	
 	private String bombCoordinates = "";
+	private boolean deadFlag = false;
 	
 	private int maxBomb = 1;  
 	private double moveSpeed;
@@ -101,20 +102,7 @@ public class Player{
 		int row = tileMap.getRowTile((int) y );
 		return tileMap.getTile(row, col);
 	}
-	
-	public Boolean isDead(int x, int y){
-		if(calculateDestination(x, y) >= 4)
-			return true;
-		return false;
-	}
-	
-	public void dead(){
-		life--;
-		x = startX;
-		y = startY;
-		System.out.println("Life: " + life );
-	}
-	
+
 	public void update(double x, double y){
 		faceleft = false;
 		double dx = x - this.x;
@@ -145,10 +133,27 @@ public class Player{
 		this.y = y;
 
 	}
+
+	
+	public void dead(){
+		life--;
+		x = startX;
+		y = startY;
+		calculatedX = x;
+		calculatedY = y;
+		System.out.println("Life: " + life );
+	}
+	
+	public boolean isplayerDead(){
+		if(calculateDestination((int)x, (int)y) >= 4 && !isAnimatingDeadImage || calculateDestination((int)x, (int)y+height - 1) >= 4 && !isAnimatingDeadImage ||
+				calculateDestination((int)x + width -1 , (int)y) >= 4 && !isAnimatingDeadImage ){
+			return true;
+		}
+		return false;
+	}
 	
 	public void deadPlayer(){
-		if(isDead((int)calculatedX, (int)calculatedY) && !isAnimatingDeadImage || isDead((int)calculatedX, (int)calculatedY + height - 1) && !isAnimatingDeadImage ||
-				isDead((int)calculatedX + width - 1, (int)calculatedY) && !isAnimatingDeadImage ){
+		if(!isAnimatingDeadImage){
 			new Thread(){
 				public void run(){
 					isAnimatingDeadImage = true;
@@ -161,11 +166,13 @@ public class Player{
 						}
 					}
 					isAnimatingDeadImage = false;
+					animation.setMove(13);
 					dead();
 				}				
 			}.start();
 		}
 	}
+	
 	
 	public void calculateMovement(){
 		String testing = "";
@@ -235,8 +242,6 @@ public class Player{
 				if(calculateDestination(tempx, tempy) == 1 && calculateDestination(tempx2, tempy2) == 1 ||
 						(calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx2, tempy2) >= 4) ||allow){ //is tile walkable
 					
-					testing = "first";
-					
 					calculatedX = tox;
 					calculatedY = toy;
 					if(clicked){
@@ -304,7 +309,6 @@ public class Player{
 						if(checkDominance() && calculateDestination((int)tox, (int)toy) == 1 && calculateDestination((int)tox + width - 1, (int)toy + height - 1) == 1 ){
 							calculatedX = tempx;
 							calculatedY = tempy;
-							testing = "second";
 
 						}else{
 							tox = calculatedX + lastdx;
@@ -337,7 +341,7 @@ public class Player{
 									(calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx2, tempy2) >= 4)){ //is tile walkable
 								calculatedX = tox;
 								calculatedY = toy;
-								testing = "third";
+
 							}else{
 								dx = 0;
 								dy = 0;
@@ -367,17 +371,7 @@ public class Player{
 			}
 		}
 
-
-			if(tempCalX - calculatedX < -3 || tempCalX - calculatedX > 3){
-				System.out.println("pota yawa nimeroy");
-				System.out.println(testing);
-			}
-			if(tempCalY - calculatedY < -3 || tempCalY - calculatedY > 3){
-				System.out.println("pota yawa nimeroy part 2: " + (tempCalY - calculatedY));
-				System.out.println(testing);
-			}
-		
-		/*int x2 = (int)tileMap.getExactTileLocation(calculatedY);
+		int x2 = (int)tileMap.getExactTileLocation(calculatedY);
 		int y2 = (int)tileMap.getExactTileLocation(calculatedX);
 		for(int i = 0; i < powerupLocations.size(); i++) {
 			if(x2 == powerupLocations.get(i).x && y2 == powerupLocations.get(i).y) {
@@ -406,7 +400,7 @@ public class Player{
 					break;
 				}
 			}
-		}*/		
+		}		
 	}
 	
 	public String getUpdatedCoordinates(){

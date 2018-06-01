@@ -46,7 +46,9 @@ public class Client extends UDPNetwork{
 		clientReceive.addNotify();
 	}
 	
-	
+	public void killPlayer(String playerName){
+		send(hostIPAddress, hostPortNumber, ("KILL " + playerName + " " + ipAddress + portNumber));
+	}
 	
 	public void requestMovementUpdate(int move){
 		send(hostIPAddress, hostPortNumber, ("UPDATE_POSITION " + move + " " + ipAddress + portNumber));

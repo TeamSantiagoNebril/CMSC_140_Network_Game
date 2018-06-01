@@ -18,18 +18,25 @@ public class ServerSend extends UDPNetwork implements Runnable{
 	
 	public void run(){
 		while(true){
-			String coordinates = gamePanel.getPlayerCoordinates("PLAYER1");
-			coordinates += gamePanel.getPlayerCoordinates("PLAYER2");
-			send(playersIP[0], playersPortNumber[0], ("UPDATE_POSITION " + coordinates));
-			send(playersIP[1], playersPortNumber[1], ("UPDATE_POSITION " + coordinates));
-			
+			String temp = gamePanel.getKillPlayer();
+			if(!temp.equals("")){
+				killPlayer(temp);
+			}
 			try {
-				Thread.sleep(15);
+				Thread.sleep(10);
 			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	public void sender(){
+		String coordinates = gamePanel.getPlayerCoordinates("PLAYER1");
+		coordinates += gamePanel.getPlayerCoordinates("PLAYER2");
+		//System.out.println(coordinates);
+		send(playersIP[0], playersPortNumber[0], ("UPDATE_POSITION " + coordinates));
+		send(playersIP[1], playersPortNumber[1], ("UPDATE_POSITION " + coordinates));
+			
 	}
 	
 	public void sendBomb(){
@@ -37,6 +44,11 @@ public class ServerSend extends UDPNetwork implements Runnable{
 		bombCoordinates += gamePanel.getCalculatedPlayerBomb("PLAYER2");
 		send(playersIP[0], playersPortNumber[0], ("BOMB " + bombCoordinates));
 		send(playersIP[1], playersPortNumber[1], ("BOMB " + bombCoordinates));
+	}
+	
+	public void killPlayer(String playerNames){
+		send(playersIP[0], playersPortNumber[0], ("KILL " + playerNames));
+		send(playersIP[1], playersPortNumber[1], ("KILL " + playerNames));
 	}
 
 }

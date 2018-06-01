@@ -103,14 +103,12 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	
 	public void update(){
 		tileMap.update();
-		
 	}
 	
 	public void updatePositions(String updateCoordinates){
 		String positions[] = updateCoordinates.split(",");
 		player.update(Double.parseDouble(positions[0]), Double.parseDouble(positions[1]));
 		player2.update(Double.parseDouble(positions[2]), Double.parseDouble(positions[3]));
-		
 	}
 	
 	public void calculateUpdatePositions(String calculatePositions){
@@ -151,6 +149,28 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			return player2.getUpdatedCoordinates();
 		}
 		return "";
+	}
+	
+	public String getKillPlayer(){
+		String temp = "";
+		if(player.isplayerDead()){
+			temp +=  "PLAYER1 ";
+		}
+		if(player2.isplayerDead()){
+			temp += "PLAYER2 ";
+		}
+		return temp;
+	}
+	
+	public void killPlayer(String playerNames){
+		String playerName[] = playerNames.split(" ");
+		for(int a = 0; a < playerName.length; a++){
+			if(playerName[a].equals("PLAYER1")){
+				player.deadPlayer();
+			}else if(playerName[a].equals("PLAYER2")){
+				player2.deadPlayer();
+			}
+		}
 	}
 	
 	public void calculatePlayerBomb(String message){
@@ -211,24 +231,45 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		int keyCode = e.getKeyCode();
 		
 		if(keyCode == KeyEvent.VK_UP){
+			if(lastClicked != 1 && clicked){
+				controller.requestMovementUpdate(lastClicked + 5);
+				clicked = false;
+			}
 			if(!clicked){
 				controller.requestMovementUpdate(1);
 				clicked = true;
+				lastClicked = 1;
 			}
 		}else if(keyCode == KeyEvent.VK_DOWN){
+			if(lastClicked != 2 && clicked){
+				controller.requestMovementUpdate(lastClicked + 5);
+				clicked = false;
+			}
 			if(!clicked){
 				controller.requestMovementUpdate(2);
 				clicked = true;
+				lastClicked = 2;
 			}
+			
 		}else if(keyCode == KeyEvent.VK_LEFT){
+			if(lastClicked != 3 && clicked){
+				controller.requestMovementUpdate(lastClicked + 5);
+				clicked = false;
+			}
 			if(!clicked){
 				controller.requestMovementUpdate(3);
 				clicked = true;
+				lastClicked = 3;
 			}
 		}else if(keyCode == KeyEvent.VK_RIGHT){
+			if(lastClicked != 4 && clicked){
+				controller.requestMovementUpdate(lastClicked + 5);
+				clicked = false;
+			}
 			if(!clicked){
 				controller.requestMovementUpdate(4);
 				clicked = true;
+				lastClicked = 4;
 			}
 		}else if(keyCode == KeyEvent.VK_SPACE){
 			controller.requestBomb();
