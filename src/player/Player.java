@@ -45,15 +45,32 @@ public class Player{
 	private double bombY;
 	private boolean isAnimatingDeadImage;
 	
+	private boolean bombMax;
+	private boolean skate;
+	private boolean fire;
+	private boolean fireDown;
+	private boolean pierceBomb;
+	private boolean redBomb;
+	private boolean heal;
+	private String powerUpCoordinates;
+	
+	private boolean appear = true;
+	
 	private String bombCoordinates = "";
 	private boolean deadFlag = false;
-	
+	private boolean dead;
 	private int maxBomb = 1;  
 	private double moveSpeed;
-	private int flameMultiplier;
+	private int flameMultiplier = 1;
 	private ArrayList<Point> powerupLocations;
 	
-	 
+	private boolean pierce;
+	private int maxBombNumber = 3;
+	private int bombNumber = maxBombNumber;
+	
+	private boolean died;
+	private int threadRunning = 0;
+	
 	public Player(){}
 	 
 	public Player(TileMap tileMap, int spriteSize, int x, int y){
@@ -85,7 +102,6 @@ public class Player{
 	public void calculateBomb(){
 		if(lastdx != 0){
 			bombCoordinates = putBombHorizontal((int)x, (int)y);
-
 		}else if(lastdy != 0){
 			bombCoordinates = putBombVertical((int)x, (int)y);
 		}
@@ -94,6 +110,7 @@ public class Player{
 	public String getBombCoordinates(){
 		String temp = bombCoordinates;
 		bombCoordinates = "";
+		isBombed = false;
 		return temp;
 	}
 	
@@ -104,52 +121,78 @@ public class Player{
 	}
 
 	public void update(double x, double y){
-		faceleft = false;
-		double dx = x - this.x;
-		double dy = y - this.y;
-		if(dy < 0){  // for bomberman sprite
-			lastdx = 0;
-			lastdy = -moveSpeed;
-			animation.setMove(1);
-		}else if(dy > 0){
-			lastdx = 0;
-			lastdy = moveSpeed;
-			animation.setMove(2);
-		}else if(dx > 0){
-			
-			lastdx = moveSpeed;
-			lastdy = 0;
-			animation.setMove(3);
-		}else if(dx < 0){
-			lastdx = -moveSpeed;
-			lastdy = 0;
-			faceleft = true;
-			animation.setMove(3);
-		}else{
-			animation.setMove(12);
-		}
-		
-		this.x = x;
-		this.y = y;
+		if(appear){
+			faceleft = false;
+			double dx = x - this.x;
+			double dy = y - this.y;
+			if(dy < 0){  // for bomberman sprite
+				lastdx = 0;
+				lastdy = -moveSpeed;
+				animation.setMove(1);
+			}else if(dy > 0){
+				lastdx = 0;
+				lastdy = moveSpeed;
+				animation.setMove(2);
+			}else if(dx > 0){
 
+				lastdx = moveSpeed;
+				lastdy = 0;
+				animation.setMove(3);
+			}else if(dx < 0){
+				lastdx = -moveSpeed;
+				lastdy = 0;
+				faceleft = true;
+				animation.setMove(3);
+			}else{
+				animation.setMove(12);
+			}
+
+			this.x = x;
+			this.y = y;
+		}
 	}
 
 	
 	public void dead(){
 		life--;
-		x = startX;
-		y = startY;
-		calculatedX = x;
-		calculatedY = y;
+		if(life == 0){
+			died = true;
+		}else{
+			x = startX;
+			y = startY;
+			calculatedX = x;
+			calculatedY = y;
+		}
 		System.out.println("Life: " + life );
+	}
+	
+	public boolean isDiedPlayer(){
+		return died;
+	}
+	
+	public void diedPlayer(){
+		appear = false;
+	}
+	
+	public double getX(){
+		return x;
+	}
+	
+	public double getY(){
+		return y;
 	}
 	
 	public boolean isplayerDead(){
 		if(calculateDestination((int)x, (int)y) >= 4 && !isAnimatingDeadImage || calculateDestination((int)x, (int)y+height - 1) >= 4 && !isAnimatingDeadImage ||
-				calculateDestination((int)x + width -1 , (int)y) >= 4 && !isAnimatingDeadImage ){
+				calculateDestination((int)x + width -1 , (int)y) >= 4 && !isAnimatingDeadImage || dead){
+			dead = false;
 			return true;
 		}
 		return false;
+	}
+	
+	public void killPlayer(){
+		dead = true;
 	}
 	
 	public void deadPlayer(){
@@ -165,9 +208,9 @@ public class Player{
 							e.printStackTrace();
 						}
 					}
-					isAnimatingDeadImage = false;
 					animation.setMove(13);
 					dead();
+					isAnimatingDeadImage = false;
 				}				
 			}.start();
 		}
@@ -377,30 +420,97 @@ public class Player{
 			if(x2 == powerupLocations.get(i).x && y2 == powerupLocations.get(i).y) {
 				switch(tileMap.getPowerTile(x2, y2)) { 
 				case 511: //bomb_powerup;
-					if(maxBomb != 2) {
-						maxBomb++;
-					}
-					tileMap.normalizePowerTile(x2, y2);
-					powerupLocations.remove(i);
+					powerUpCoordinates = x2 + " " + y2;
+					bombMax = true;
 					break;
-				case 521: //movespeed_powerup;
+				case 521: 
 					if(moveSpeed < 4.0) {
-						moveSpeed += 1.0;
+						moveSpeed = 4.0;
 					}
-					tileMap.normalizePowerTile(x2, y2);
-					powerupLocations.remove(i);
+					powerUpCoordinates = x2 + " " + y2;
+					skate = true;
 					break;
-				case 531: //flame powerup
-					tileMap.normalizePowerTile(x2, y2);
-					powerupLocations.remove(i);
-					if(flameMultiplier < 4) {
-						flameMultiplier++;
-					}
-					System.out.println("fff");
+				case 531:
+					powerUpCoordinates = x2 + " " + y2;
+					fire = true;
+					break;
+				case 541: 
+					powerUpCoordinates = x2 + " " + y2;
+					pierceBomb = true;
+					break;
+				case 551: 
+					powerUpCoordinates = x2 + " " + y2;
+					redBomb = true;
+					break;
+				case 561: 
+					powerUpCoordinates = x2 + " " + y2;
+					heal = true;
 					break;
 				}
 			}
 		}		
+	}
+	
+	public void pierceBomb(){
+		pierce = true;
+	}
+	
+	public String getPowerUp(){
+		String temp = "";
+		if(skate){
+			skate = false;
+			temp = powerUpCoordinates + " 1";
+		}
+		if(fire){
+			fire = false;
+			temp = powerUpCoordinates + " 2";
+		}
+		if(bombMax){
+			bombMax = false;
+			temp = powerUpCoordinates + " 3";
+		}
+		
+		if(pierceBomb){
+			pierceBomb = false;
+			temp = powerUpCoordinates + " 4";
+		}
+		if(redBomb){
+			redBomb = false;
+			temp = powerUpCoordinates + " 5";
+		}
+		if(heal){
+			heal = false;
+			temp = powerUpCoordinates + " 6";
+		}
+		return temp;
+	}
+	
+	public void addMaxBomb(){
+		if(maxBombNumber <= 5){
+			maxBombNumber++;
+			bombNumber++;
+		}
+	}
+	
+	public void healPlayer(){
+		if(life <= 3)
+		life++;
+	}
+	
+	public void maxFlame(){
+		flameMultiplier = 26;
+	}
+	
+	public void reloadBomb(){
+		bombNumber++;
+	}
+	
+	public void addFlame(){
+		flameMultiplier++;
+	}
+	
+	public void descreaseFlame(){
+		flameMultiplier--;
 	}
 	
 	public String getUpdatedCoordinates(){
@@ -437,10 +547,13 @@ public class Player{
 	}
 	
 	public void putBomb(int col, int row){
-		bombLocation = true;
-		tileMap.putBomb(col, row);
-		bombX = col*width;
-		bombY = row*height;
+		if(bombNumber > 0){
+			bombLocation = true;
+			tileMap.putBomb(col, row, flameMultiplier, this, pierce);
+			bombX = col*width;
+			bombY = row*height;
+			bombNumber--;
+		}
 	}
 	
 	public int checkDominanceParams(){  //to return kun 70 percent or 30 percent han tile an kailangan igkita
@@ -481,12 +594,13 @@ public class Player{
 	}
 	
 	public void draw(Graphics2D g){
-		if(faceleft){
-			g.drawImage(animation.getImage(), (int)x + width, (int)y, -width, height, null);
-		}else{
-			g.drawImage(animation.getImage(), (int)x, (int)y, width, height, null);
+		if(appear){
+			if(faceleft){
+				g.drawImage(animation.getImage(), (int)x + width, (int)y, -width, height, null);
+			}else{
+				g.drawImage(animation.getImage(), (int)x, (int)y, width, height, null);
+			}
 		}
 	}
 	
 }
-

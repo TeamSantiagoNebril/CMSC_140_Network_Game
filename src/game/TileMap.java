@@ -37,7 +37,10 @@ public class TileMap extends Thread{
     private Image bomb_powerup = t.getImage("assets/images/Sprites/Powerups/BombPowerup.png");  
     private Image speed_powerup = t.getImage("assets/images/Sprites/Powerups/SpeedPowerup.png");
     private Image flame_powerup = t.getImage("assets/images/Sprites/Powerups/FlamePowerup.png");
- 
+    private Image life_powerup = t.getImage("assets/images/Sprites/Powerups/life.png");
+    private Image pierceBomb_powerup = t.getImage("assets/images/Sprites/Powerups/pierceBomb.png");
+    private Image redBomb_powerup = t.getImage("assets/images/Sprites/Powerups/redBomb.png");
+    
     private Image bomb1 = t.getImage("assets/images/Sprites/Bomb/Bomb_f01.png");
     private Image bomb2 = t.getImage("assets/images/Sprites/Bomb/Bomb_f02.png");
     private Image bomb3 = t.getImage("assets/images/Sprites/Bomb/Bomb_f03.png");
@@ -55,10 +58,9 @@ public class TileMap extends Thread{
     private Image softBlockBurn;
     private Graphics2D g;
     
-    private Player player1;
-    private Player player2;
-    private Player player3;
-    private Player player4;
+    private int flameMultiplier = 0;
+    
+    private Player bomber;
     
 	public TileMap(String file, int tileSize){
 		this.tileSize = tileSize;
@@ -81,50 +83,32 @@ public class TileMap extends Thread{
 				for(int col = 0; col < mapWidth; col++){
 					map[row][col] = Integer.parseInt(tokens[col]);
 					powerupMap[row][col] = Integer.parseInt(tokens[col]);
-					if(Integer.parseInt(tokens[col]) == 2) {
-						powerupRandomizerVariable.add(new Point(row, col));
-					}
-			 
 				}
 			}
 			
-			int[] pNumType = {520, 520, 520};
-			for(int counter = 0; counter < 3; counter++) {		 
-				for(int counter2 = 0; counter2 < 8; counter2++) {
-					powerupType.add(pNumType[counter]);
-				}
-			}
-			
-			Random rand = new Random();
-			for(int counter = 0; counter < 24; counter++) {
-				int position = rand.nextInt(powerupRandomizerVariable.size());
-				int pValue = rand.nextInt(powerupType.size());
-		        powerupMap[powerupRandomizerVariable.get(position).x][powerupRandomizerVariable.get(position).y] = powerupType.get(pValue);
-		        powerupLocations.add(new Point(powerupRandomizerVariable.get(position).x , powerupRandomizerVariable.get(position).y));
-		        powerupRandomizerVariable.remove(position);
-		        powerupType.remove(pValue);
-			}
-
 		}catch(FileNotFoundException e){
 			System.err.println("File Not Found");
 			System.exit(-1);
 		}catch(IOException e){}
 	}
 	
+	public void setMap(String xCoordinate, String yCoordinate, String powerUp){
+		String xCoordinates[] = xCoordinate.split(",");
+		String yCoordinates[] = yCoordinate.split(",");
+		String powerUps[] = powerUp.split(",");
+		
+		for(int a = 0; a < 24; a++){
+			powerupMap[Integer.parseInt(xCoordinates[a])][Integer.parseInt(yCoordinates[a])] = Integer.parseInt(powerUps[a]);
+			powerupLocations.add(new Point(Integer.parseInt(xCoordinates[a]), Integer.parseInt(yCoordinates[a])));
+		}
+	}
+	
 	public void normalizePowerTile(int row, int col){
-		powerupMap[row][col] = 1;
-		 
+		if(powerupMap[row][col] != 1){
+			powerupMap[row][col] = 1;
+		}
 	}
-		 
-	
-	public void setPlayer(Player player1, Player player2, Player player3, Player player4) {
-		this.player1 = player1;
-		this.player2 = player2;
-		this.player3 = player3;
-		this.player4 = player4;
-	}
-	
-	
+		
 	public int getPowerTile(int row, int col){
 		return powerupMap[row][col];
 	}
@@ -174,10 +158,71 @@ public class TileMap extends Thread{
 		return map[row][col];
 	}
 	 	
-	public void putBomb(int col, int row){
-		bombCol = col;
-		bombRow = row;
-		isBombed = true;
+	public void putBomb(int col, int row, int flameMultiplier, Player player, boolean pierce){
+		int threadRow = row;
+		int threadCol = col;
+		new Thread(){
+
+			ArrayList <Integer> burnBlockCoordinates = new ArrayList<Integer>();
+			public void run(){ //animating a tile to have bomb or flame
+				int localFlameIdentifier;
+				map[threadRow][threadCol] = 3;
+				isBombed = false;
+
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+				player.reloadBomb();
+				localFlameIdentifier = flameIdentifier;
+
+				burnBlockCoordinates.clear();
+				burnBlockCoordinates = setFlames(threadRow, threadCol, flameIdentifier, flameMultiplier, pierce);
+				flameIdentifier++;
+
+				for(int a = 0; a < 10; a++){
+					if(a == 0){
+						softBlockBurn = softBlockBurn1;
+					}else if(a == 1){
+						softBlockBurn = softBlockBurn1;
+					}else if(a == 2){
+						softBlockBurn = softBlockBurn2;
+					}else if(a == 3){
+						softBlockBurn = softBlockBurn2;
+					}else if(a == 4){
+						softBlockBurn = softBlockBurn3;
+					}else if(a == 5){
+						softBlockBurn = softBlockBurn3;
+					}else if(a == 6){
+						softBlockBurn = softBlockBurn4;
+					}else if(a == 7){
+						softBlockBurn = softBlockBurn4;
+					}else if(a == 8){
+						softBlockBurn = softBlockBurn5;
+					}else if(a == 8){
+						softBlockBurn = softBlockBurn5;
+					}
+					draw2(g);
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+
+				removeFlame(threadRow, threadCol, localFlameIdentifier, flameMultiplier);
+			}
+			public void draw2(Graphics2D g){
+				for(int a = 0; a < burnBlockCoordinates.size(); ){
+					int row = burnBlockCoordinates.get(a);
+					int col = burnBlockCoordinates.get(a+1);
+					a += 2;
+					g.drawImage(softBlockBurn, col*tileSize, row*tileSize, tileSize, tileSize, null);
+				}
+			}
+		}.start();	
 	}
 	
 	public double getExactTileLocation(double i){
@@ -196,74 +241,10 @@ public class TileMap extends Thread{
 		if(flameIdentifier == 500){
 			flameIdentifier = 5;
 		}
-		if(isBombed){
-			int threadRow = bombRow;
-			int threadCol = bombCol;
-			new Thread(){
-				
-				ArrayList <Integer> burnBlockCoordinates = new ArrayList<Integer>();
-				public void run(){ //animating a tile to have bomb or flame
-					int localFlameIdentifier;
-					map[threadRow][threadCol] = 3;
-					isBombed = false;
-					
-					try {
-						Thread.sleep(3000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					
-					localFlameIdentifier = flameIdentifier;
-					burnBlockCoordinates.clear();
-					burnBlockCoordinates = setFlames(threadRow, threadCol, flameIdentifier, 3);
-					flameIdentifier++;
-					
-					for(int a = 0; a < 10; a++){
-						if(a == 0){
-							softBlockBurn = softBlockBurn1;
-						}else if(a == 1){
-							softBlockBurn = softBlockBurn1;
-						}else if(a == 2){
-							softBlockBurn = softBlockBurn2;
-						}else if(a == 3){
-							softBlockBurn = softBlockBurn2;
-						}else if(a == 4){
-							softBlockBurn = softBlockBurn3;
-						}else if(a == 5){
-							softBlockBurn = softBlockBurn3;
-						}else if(a == 6){
-							softBlockBurn = softBlockBurn4;
-						}else if(a == 7){
-							softBlockBurn = softBlockBurn4;
-						}else if(a == 8){
-							softBlockBurn = softBlockBurn5;
-						}else if(a == 8){
-							softBlockBurn = softBlockBurn5;
-						}
-						draw2(g);
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-					
-					removeFlame(threadRow, threadCol, localFlameIdentifier, 3);
-				}
-				public void draw2(Graphics2D g){
-					for(int a = 0; a < burnBlockCoordinates.size(); ){
-						int row = burnBlockCoordinates.get(a);
-						int col = burnBlockCoordinates.get(a+1);
-						a += 2;
-						g.drawImage(softBlockBurn, col*tileSize, row*tileSize, tileSize, tileSize, null);
-					}
-				}
-			}.start();
-			
-		}
+		
 	}
 	
-	public ArrayList<Integer> setFlames(int row, int col, int set, int numberOfFlames){
+	public ArrayList<Integer> setFlames(int row, int col, int set, int numberOfFlames, boolean pierce){
 		boolean colLeft = true;
 		boolean colRight = true;
 		boolean rowUp = true;
@@ -275,7 +256,9 @@ public class TileMap extends Thread{
 				if(map[row - a][col] != 0){
 					if(map[row - a][col] == 2){
 						map[row - a][col] = 4;
-						rowUp = false;
+						if(!pierce){
+							rowUp = false;
+						}
 						burnBlockCoordinates.add(row-a);
 						burnBlockCoordinates.add(col);
 					}else if(map[row - a][col] == 3){
@@ -283,7 +266,7 @@ public class TileMap extends Thread{
 					}else{
 						map[row - a][col] = set;
 					}
-				}else{
+				}else if(!pierce){
 					rowUp = false;
 				}
 			}
@@ -291,7 +274,9 @@ public class TileMap extends Thread{
 				if(map[row + a][col] != 0){
 					if(map[row + a][col] == 2){
 						map[row + a][col] = 4;
-						rowDown = false;
+						if(!pierce){
+							rowDown = false;
+						}
 						burnBlockCoordinates.add(row+a);
 						burnBlockCoordinates.add(col);
 					}else if(map[row + a][col] == 3){
@@ -299,7 +284,7 @@ public class TileMap extends Thread{
 					}else{
 						map[row + a][col] = set;
 					}
-				}else{
+				}else if(!pierce){
 					rowDown = false;
 				}
 			}
@@ -307,7 +292,9 @@ public class TileMap extends Thread{
 				if(map[row][col - a] != 0){
 					if(map[row][col - a] == 2){
 						map[row][col - a] = 4;
-						colLeft = false;
+						if(!pierce){
+							colLeft = false;
+						}
 						burnBlockCoordinates.add(row);
 						burnBlockCoordinates.add(col-a);
 					}else if(map[row][col - a] == 3){
@@ -315,7 +302,7 @@ public class TileMap extends Thread{
 					}else{
 						map[row][col - a] = set;
 					}
-				}else{
+				}else if(!pierce){
 					colLeft = false;
 				}
 			}
@@ -323,7 +310,9 @@ public class TileMap extends Thread{
 				if(map[row][col + a] != 0){
 					if(map[row][col + a] == 2){
 						map[row][col + a] = 4;
-						colRight = false;
+						if(!pierce){
+							colRight = false;
+						}
 						burnBlockCoordinates.add(row);
 						burnBlockCoordinates.add(col+a);
 					}else if(map[row][col + a] == 3){
@@ -331,7 +320,7 @@ public class TileMap extends Thread{
 					}else{
 						map[row][col + a] = set;
 					}
-				}else{
+				}else if(!pierce){
 					colRight = false;
 				}
 			}
@@ -394,6 +383,15 @@ public class TileMap extends Thread{
 		case 530:
 			powerupMap[row][col] = 531;
 			break;
+		case 540:
+			powerupMap[row][col] = 541;
+			break;
+		case 550:
+			powerupMap[row][col] = 551;
+			break;
+		case 560:
+			powerupMap[row][col] = 561;
+			break;
 		}
 	}
 		 
@@ -412,6 +410,12 @@ public class TileMap extends Thread{
 					g.drawImage(speed_powerup, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}else if(current == 1 && powerupCurrent == 531) {
 					g.drawImage(flame_powerup, col*tileSize, row*tileSize, tileSize, tileSize, null);
+				}else if(current == 1 && powerupCurrent == 541) {
+					g.drawImage(pierceBomb_powerup, col*tileSize, row*tileSize, tileSize, tileSize, null);
+				}else if(current == 1 && powerupCurrent == 551) {
+					g.drawImage(redBomb_powerup, col*tileSize, row*tileSize, tileSize, tileSize, null);
+				}else if(current == 1 && powerupCurrent == 561) {
+					g.drawImage(life_powerup, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}else if(current == 0){
 					g.drawImage(hard_block, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}else if(current == 1 ){

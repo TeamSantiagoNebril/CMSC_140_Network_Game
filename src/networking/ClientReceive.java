@@ -18,18 +18,26 @@ public class ClientReceive extends UDPNetwork implements Runnable{
 	}
 	
 	public void run(){
-		
+		int counter = 0;
 		while(true){
 			String receivedString[] = receive(portNumber).split(" ");
-			if(receivedString[0].equals("UPDATE_POSITION")){
-				//System.out.println(receivedString[1]);
-				gamePanel.updatePositions(receivedString[1]);
-			}else if(receivedString[0].equals("BOMB")){
-				gamePanel.setBombLocation(receivedString);
-			}else if(receivedString[0].equals("KILL")){
-				
-				gamePanel.killPlayer(receivedString[1]);
-			}
+			//new Thread(){
+				//public void run(){
+					if(receivedString[0].equals("UPDATE_POSITION")){
+						gamePanel.updatePositions(receivedString[1]);
+					}else if(receivedString[0].equals("BOMB_COORDINATES")){
+						gamePanel.setBombLocation(receivedString);
+					}else if(receivedString[0].equals("KILL")){
+						gamePanel.killPlayer(receivedString[1]);
+					}else if(receivedString[0].equals("MONSTER")){
+						gamePanel.setMonsterCoordinates(receivedString[1]);
+					}else if(receivedString[0].equals("POWERUP")){
+						gamePanel.setPowerUp(receivedString);
+					}else if(receivedString[0].equals("DIED")){
+						gamePanel.setDiedPlayer(receivedString);
+					}
+				//}
+			//}.start();
 		}
 	}
 	

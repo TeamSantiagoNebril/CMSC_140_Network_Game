@@ -66,7 +66,7 @@ public class Server extends UDPNetwork implements Runnable {
 	public void run(){
 		waitForPlayerConnections();
 		for(int a = 0; a < 2; a++){
-			send(playersIP[a], playersPortNumber[a], "POSITIONS 48,48,96,48,48,96,96,96");
+			send(playersIP[a], playersPortNumber[a], "POSITIONS 48,48,1296,528,48,96,96,96");
 		}
 		
 		int a = 0;
@@ -89,7 +89,7 @@ public class Server extends UDPNetwork implements Runnable {
 		serverSend.addNotify();
 		
 		try {
-			Thread.sleep(100);
+			Thread.sleep(300);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
@@ -168,7 +168,7 @@ public class Server extends UDPNetwork implements Runnable {
 				}
 			}
 			
-			int[] pNumType = {520, 520, 520};
+			int[] pNumType = {560, 560, 560};
 			for(int counter = 0; counter < 3; counter++) {		 
 				for(int counter2 = 0; counter2 < 8; counter2++) {
 					powerupType.add(pNumType[counter]);
@@ -176,13 +176,56 @@ public class Server extends UDPNetwork implements Runnable {
 			}
 			
 			Random rand = new Random();
+
+			String xCoordinates = "";
+			String yCoordinates = "";
+			String powerUp = "";
+			
 			for(int counter = 0; counter < 24; counter++) {
 				int position = rand.nextInt(powerupRandomizerVariable.size());
 				int pValue = rand.nextInt(powerupType.size());
-		        powerupMap[powerupRandomizerVariable.get(position).x][powerupRandomizerVariable.get(position).y] = powerupType.get(pValue);
-		        powerupLocations.add(new Point(powerupRandomizerVariable.get(position).x , powerupRandomizerVariable.get(position).y));
+		        xCoordinates += powerupRandomizerVariable.get(position).x + ",";
+		        yCoordinates += powerupRandomizerVariable.get(position).y + ",";
+				powerUp += powerupType.get(pValue) + ",";
 		        powerupRandomizerVariable.remove(position);
 		        powerupType.remove(pValue);
+			}
+			
+			
+			for(int a = 0; a < 2; a++){ //number of players!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				send(playersIP[a], playersPortNumber[a], "XCOORDINATE " + xCoordinates);
+				while(true){
+					String received[] = receive(portNumber).split(" ");
+					if(received[0].equals("RECEIVED")){
+						break;
+					}else{
+						continue;
+					}
+				}
+			}
+			
+			for(int a = 0; a < 2; a++){ //number of players!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				send(playersIP[a], playersPortNumber[a], "YCOORDINATE " + yCoordinates);
+				while(true){
+					String received[] = receive(portNumber).split(" ");
+					if(received[0].equals("RECEIVED")){
+						break;
+					}else{
+						continue;
+					}
+				}
+			}
+			
+			for(int a = 0; a < 2; a++){ //number of players!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
+				send(playersIP[a], playersPortNumber[a], "POWERUP " + powerUp);
+				while(true){
+					String received[] = receive(portNumber).split(" ");
+					if(received[0].equals("RECEIVED")){
+						break;
+					}else{
+						continue;
+					}
+				}
 			}
 			br.close();
 		}catch(FileNotFoundException e){

@@ -18,7 +18,7 @@ public class ServerMovementThread extends Thread{
 	public void run(){
 		while(running){
 			gamePanel.calculateUpdatePositions(playerName + " " + receivedString);
-			serverSend.sender();
+			//serverSend.sender();
 			try {
 				Thread.sleep(15);
 			} catch (InterruptedException e) {

@@ -39,6 +39,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	private boolean clicked = false;
 	private double initialPlayerX;
 	private double initialPlayerY;
+	
 	public GamePanel(){
 		super();
 		width = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
@@ -83,8 +84,42 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		}
 	}
 	
+	public String getMonsterCoordinates(){
+		return monster.calculateMonsterCoordinates();
+	}
+	
+	public void setMonsterCoordinates(String message){
+		if(message.equals("DEAD")){
+			monster.kill();
+		}else{
+			String coordinates[] = message.split(",");
+			monster.update(Double.parseDouble(coordinates[0]), Double.parseDouble(coordinates[1]));
+		}
+	}
+	
+	public String getDiedPlayer(){
+		String temp = "";
+		if(player.isDiedPlayer()){
+			temp += "PLAYER1 ";
+		}
+		if(player2.isDiedPlayer()){
+			temp += "PLAYER2 ";
+		}
+		return temp;
+	}
+	
+	public void setDiedPlayer(String message[]){
+		for(int a = 1; a < message.length; a++){
+			if(message[a].equals("PLAYER1")){
+				player.diedPlayer();
+			}else if(message[a].equals("PLAYER2")){
+				player2.diedPlayer();
+			}
+		}
+	}
+	
 	public void init(String initialPositions){
-		
+		Player players[] = new Player[2];
 		running = true;
 		bufferedImage = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
 		g = (Graphics2D) bufferedImage.getGraphics();
@@ -95,6 +130,9 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		String positions[] = initialPositions.split(",");
 		player = new Player(tileMap, size, Integer.parseInt(positions[0]), Integer.parseInt(positions[1]));
 		player2 = new Player(tileMap, size, Integer.parseInt(positions[2]), Integer.parseInt(positions[3]));
+		players[0] = player;
+		players[1] = player2;
+		monster = new Monster(tileMap, 240, 48, size, size, players);
 	}
 	
 	public void setController(Client controller){
@@ -162,6 +200,10 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		return temp;
 	}
 	
+	public void setMap(String xCoordinates, String yCoordinates, String powerUp){
+		tileMap.setMap(xCoordinates, yCoordinates, powerUp);
+	}
+	
 	public void killPlayer(String playerNames){
 		String playerName[] = playerNames.split(" ");
 		for(int a = 0; a < playerName.length; a++){
@@ -181,6 +223,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		}
 	}
 	
+	
 	public String getCalculatedPlayerBomb(String playerName){
 		String temp = "";
 		if(playerName.equals("PLAYER1")){
@@ -195,13 +238,63 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		return "";
 	}
 	
+	public String getPowerUp(String playerName){
+		String temp = "";
+		if(playerName.equals("PLAYER1")){
+			temp = player.getPowerUp();
+			if(temp.length() != 0){
+				return "PLAYER1 " + temp + " ";
+			}
+		}else if(playerName.equals("PLAYER2")){
+			temp = player2.getPowerUp();
+			if(temp.length() != 0){
+				return "PLAYER2 " + temp + " ";
+			}
+		} 
+		return "";
+	}
+	
+	public void setPowerUp(String message[]){
+		int a = 1;
+		for(int b = 0; b < message.length; b++){
+		}
+		while(a < message.length){
+			if(message[a].equals("PLAYER1")){
+				if(message[a + 3].equals("2")){
+					player.addFlame();
+				}else if(message[a + 3].equals("3")){
+					player.addMaxBomb();
+				}else if(message[a + 3].equals("4")){
+					player.pierceBomb();
+				}else if(message[a + 3].equals("5")){
+					player.maxFlame();
+				}else if(message[a + 3].equals("6")){
+					player.healPlayer();
+				}
+			}else if(message[a].equals("PLAYER2")){
+				if(message[a + 3].equals("2")){
+					player2.addFlame();
+				}else if(message[a + 3].equals("3")){
+					player2.addMaxBomb();
+				}else if(message[a + 3].equals("4")){
+					player2.pierceBomb();
+				}else if(message[a + 3].equals("5")){
+					player2.maxFlame();
+				}else if(message[a + 3].equals("6")){
+					player2.healPlayer();
+				}
+			}
+			tileMap.normalizePowerTile(Integer.parseInt(message[a + 1]), Integer.parseInt(message[a + 2]));
+			a += 4;
+		}
+	}
+	
 	public void setBombLocation(String message[]){
 		int a = 1;
 		for(int b = 0; b < message.length; b++){
 		}
 		while(a < message.length){
 			if(message[a].equals("PLAYER1")){
-				
 				player.putBomb(Integer.parseInt(message[a + 1]), Integer.parseInt(message[a + 2]));
 				a += 3;
 			}else if(message[a].equals("PLAYER2")){
@@ -215,7 +308,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		tileMap.draw(g);
 		player.draw(g);
 		player2.draw(g);
-		
+		monster.draw(g);
 	}
 	
 	public void draw(){
