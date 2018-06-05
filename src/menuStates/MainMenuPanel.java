@@ -9,7 +9,6 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
-import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -110,7 +109,7 @@ public class MainMenuPanel extends JPanel{
 		GridLayout g4 = new GridLayout(0,2,5,0);
 		rightBase2Bottom.setLayout(g4);
 		panels[4] = new MenuPanel("Credits");
-//		panels[4].addButtonPanel("CREDITS", 35);
+
 		panels[4].setBackgroundModified(panelBasicColor);
 		panels[5] = new MenuPanel("Quit");
 		panels[5].addButtonPanel("EXIT", 40);

@@ -6,8 +6,8 @@ import mainMenu.MainMenuManager;
 public class Main {
 
 	public static void main(String[] args) {
-		//MainMenuManager mainGame = new MainMenuManager();
-		PlayerWinFrame f = new PlayerWinFrame();
+		MainMenuManager mainGame = new MainMenuManager();
+		//PlayerWinFrame f = new PlayerWinFrame();
 	}
 }
  

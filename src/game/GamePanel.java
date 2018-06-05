@@ -110,7 +110,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		String positions[] = updateCoordinates.split(",");
 		player.update(Double.parseDouble(positions[0]), Double.parseDouble(positions[1]));
 		player2.update(Double.parseDouble(positions[2]), Double.parseDouble(positions[3]));
-		
 	}
 	
 	public void calculateUpdatePositions(String calculatePositions){
@@ -254,6 +253,5 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		}else if(keyCode == KeyEvent.VK_SPACE){
 			//controller.requestBomb();
 		}
-		
 	}
 }

@@ -7,9 +7,15 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.FontFormatException;
 import java.awt.GraphicsEnvironment;
+import java.awt.GridLayout;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
+
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
+import javax.swing.JPanel;
 
 import menuStates.MainMenuPanel;
 import menuStates.OptionsPanel;
@@ -24,9 +30,16 @@ public class MainMenuManager extends JFrame{
 	private int menuState = 1;
 	private MainMenuPanel mainPanel;
 	private GamePanel gamePanel;
+	private JPanel alphaPanel;
+	
 	public MainMenuManager()
 	{
 		super();
+		try {
+			setIconImage(ImageIO.read(new File("assets/images/BIcon.png")));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
 		this.setUndecorated(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -34,8 +47,6 @@ public class MainMenuManager extends JFrame{
 		this.setLayout(new BorderLayout());
 		loadFonts();
 		mainPanel = new MainMenuPanel(this);
-		
-		
 		
 		this.add(mainPanel, BorderLayout.CENTER);
 		this.repaint();
@@ -50,10 +61,13 @@ public class MainMenuManager extends JFrame{
 				break;
 			case 2:
 				mainPanel.disappear(2);
-				
+
 				gamePanel = new GamePanel();
-				
+
 				InitializeNetwork network = new InitializeNetwork(gamePanel);
+				//alphaPanel = new JPanel();
+				//alphaPanel.setLayout(new GridLayout(2,0,0,0));
+				//alphaPanel.add(gamePanel);
 				this.setContentPane(gamePanel);
 				this.pack();
 				gamePanel.requestFocusInWindow();
