@@ -222,6 +222,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 			}
 		}else if(keyCode == KeyEvent.VK_LEFT){
 			if(!clicked){
+				System.out.println("LEFT");
 				controller.requestMovementUpdate(3);
 				clicked = true;
 			}

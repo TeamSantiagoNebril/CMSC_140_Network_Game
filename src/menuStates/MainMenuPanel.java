@@ -9,6 +9,7 @@ import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Toolkit;
 import java.io.File;
+import java.io.IOException;
 import java.util.Timer;
 import java.util.TimerTask;
 
@@ -19,6 +20,8 @@ import javax.swing.SwingConstants;
 import javax.swing.border.EmptyBorder;
 
 import mainMenu.MainMenuManager;
+import mainMenu.MenuGameInputPanel;
+import mainMenu.MenuInputPanel;
 import mainMenu.MenuPanel;
 import menuStatesListener.MainMenuListener;
 
@@ -53,7 +56,7 @@ public class MainMenuPanel extends JPanel{
 	public MainMenuPanel(MainMenuManager manager)
 	{
 		this.manager = manager;
-		panelBasicColor = new Color((float)0.0,(float)0.0,(float)0.4,(float)0.6); //0.6float is 153 int
+		panelBasicColor = new Color((float)0.0,(float)0.0,(float)0.4,(float)0.8); //0.6float is 153 int
 		try {
 			dbImage = ImageIO.read(new File("assets/images/shard_metal.jpg"));
 		}catch(Exception e)
@@ -88,17 +91,17 @@ public class MainMenuPanel extends JPanel{
 		titleLabel.setForeground(Color.WHITE);
 		panels[0].addCenterLabel(titleLabel);
 		
+		
 		panels[1] = new MenuPanel("Play");
-		panels[1].addButtonPanel("PLAY", 40);
+		panels[1].addButtonPanel("START", 40);
 		panels[1].setBackgroundModified(panelBasicColor);
 		
 		//show right top, center, bot division
 		GridLayout g3 = new GridLayout(3,0,0,5);
 		rightBase1.setLayout(g3);
-		panels[2] = new MenuPanel("userinfo");
+		panels[2] = new MenuInputPanel("userinfo");
 		panels[2].setBackground(panelBasicColor);
-		panels[3] = new MenuPanel("Settings");
-		panels[3].addButtonPanel("SETTINGS", 40);
+		panels[3] = new MenuGameInputPanel("Settings");
 		panels[3].setBackgroundModified(panelBasicColor);
 		rightBase2Bottom = new JPanel();
 		rightBase2Bottom.setOpaque(false);
@@ -107,7 +110,7 @@ public class MainMenuPanel extends JPanel{
 		GridLayout g4 = new GridLayout(0,2,5,0);
 		rightBase2Bottom.setLayout(g4);
 		panels[4] = new MenuPanel("Credits");
-		panels[4].addButtonPanel("CREDITS", 35);
+//		panels[4].addButtonPanel("CREDITS", 35);
 		panels[4].setBackgroundModified(panelBasicColor);
 		panels[5] = new MenuPanel("Quit");
 		panels[5].addButtonPanel("EXIT", 40);

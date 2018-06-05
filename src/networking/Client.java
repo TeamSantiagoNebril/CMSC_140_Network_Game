@@ -18,12 +18,7 @@ public class Client extends UDPNetwork{
 		this.hostPortNumber = hostPortNumber;
 		this.portNumber = portNumber;
 		this.gamePanel = gamePanel;
-		try {
-			ipAddress = InetAddress.getLocalHost().getHostAddress();
-		} catch (UnknownHostException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+		ipAddress = "192.168.254.106";
 		
 		send(hostIPAddress, hostPortNumber, "JOIN " + portNumber + " " + ipAddress);
 		
@@ -45,8 +40,6 @@ public class Client extends UDPNetwork{
 		ClientReceive clientReceive = new ClientReceive(portNumber, gamePanel, hostIPAddress, hostPortNumber);
 		clientReceive.addNotify();
 	}
-	
-	
 	
 	public void requestMovementUpdate(int move){
 		send(hostIPAddress, hostPortNumber, ("UPDATE_POSITION " + move + " " + ipAddress + portNumber));

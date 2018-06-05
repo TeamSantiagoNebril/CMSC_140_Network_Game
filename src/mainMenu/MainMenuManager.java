@@ -10,7 +10,6 @@ import java.awt.GraphicsEnvironment;
 import java.io.File;
 import java.io.IOException;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 import menuStates.MainMenuPanel;
 import menuStates.OptionsPanel;
@@ -35,11 +34,6 @@ public class MainMenuManager extends JFrame{
 		this.setLayout(new BorderLayout());
 		loadFonts();
 		mainPanel = new MainMenuPanel(this);
-		
-		
-		//OptionsPanel optionsPanel = new OptionsPanel();
-		//optionsPanel.setBackground(Color.BLACK);
-		//this.add(optionsPanel, BorderLayout.CENTER);
 		
 		
 		
@@ -68,7 +62,7 @@ public class MainMenuManager extends JFrame{
 			case 3:
 				break;
 			case 4: //Settings is pressed
-				mainPanel.disappear(4);
+				//mainPanel.disappear(4);
 				break;
 			case 5:
 				System.exit(0);
@@ -85,9 +79,9 @@ public class MainMenuManager extends JFrame{
 			   GraphicsEnvironment ge = GraphicsEnvironment.getLocalGraphicsEnvironment();
 			   ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/neuropol x rg.ttf")));
 			   ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/FREEDOM.ttf")));
+			   ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File("assets/fonts/Halo3.ttf")));
 			} catch (IOException|FontFormatException e) {
-			 System.out.println("something is wrong");
-			 System.out.println(e);
+				e.printStackTrace();
 			}
 	}
 	
