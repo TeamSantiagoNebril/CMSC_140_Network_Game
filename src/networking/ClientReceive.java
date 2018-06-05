@@ -10,6 +10,7 @@ public class ClientReceive extends UDPNetwork implements Runnable{
 	private GamePanel gamePanel;
 	private String hostIPAddress;
 	private int hostPortNumber;
+	private String receivedBombId = "";
 	public ClientReceive(int portNumber , GamePanel gamePanel, String hostIPAddress, int hostPortNumber){
 		this.portNumber = portNumber;
 		this.gamePanel = gamePanel;
@@ -26,7 +27,10 @@ public class ClientReceive extends UDPNetwork implements Runnable{
 					if(receivedString[0].equals("UPDATE_POSITION")){
 						gamePanel.updatePositions(receivedString[1]);
 					}else if(receivedString[0].equals("BOMB_COORDINATES")){
-						gamePanel.setBombLocation(receivedString);
+						if(!receivedBombId.equals(receivedString[1])){
+							gamePanel.setBombLocation(receivedString);
+							receivedBombId = receivedString[1];
+						}
 					}else if(receivedString[0].equals("KILL")){
 						gamePanel.killPlayer(receivedString[1]);
 					}else if(receivedString[0].equals("MONSTER")){

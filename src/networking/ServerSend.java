@@ -9,6 +9,7 @@ public class ServerSend extends UDPNetwork implements Runnable{
 	String playersIP[];
 	int playersPortNumber[];
 	GamePanel gamePanel;
+	int bombId = 0;
 	public ServerSend(String playersIP[], int playersPortNumber[], GamePanel gamePanel){
 		this.playersIP = playersIP;
 		this.playersPortNumber = playersPortNumber;
@@ -66,8 +67,17 @@ public class ServerSend extends UDPNetwork implements Runnable{
 		String bombCoordinates = gamePanel.getCalculatedPlayerBomb("PLAYER1");
 		bombCoordinates += gamePanel.getCalculatedPlayerBomb("PLAYER2");
 		
-		send(playersIP[0], playersPortNumber[0], ("BOMB_COORDINATES " + bombCoordinates));
-		send(playersIP[1], playersPortNumber[1], ("BOMB_COORDINATES " + bombCoordinates));
+		for(int a = 0; a < 3; a++){
+			send(playersIP[0], playersPortNumber[0], ("BOMB_COORDINATES " + bombId + " " + bombCoordinates));
+			send(playersIP[1], playersPortNumber[1], ("BOMB_COORDINATES " + bombId + " " + bombCoordinates));
+			try {
+				Thread.sleep(5);
+			} catch (InterruptedException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
+		bombId++;
 	}
 	
 	public void sendMonsterCoordinates(){

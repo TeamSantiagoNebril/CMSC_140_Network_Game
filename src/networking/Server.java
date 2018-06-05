@@ -79,6 +79,7 @@ public class Server extends UDPNetwork implements Runnable {
 			}
 		}
 		
+		
 		generateMap();
 	
 		for(a = 0; a < 2; a++){
@@ -89,13 +90,12 @@ public class Server extends UDPNetwork implements Runnable {
 		serverSend.addNotify();
 		
 		try {
-			Thread.sleep(300);
+			Thread.sleep(350);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
 		
 		while(true){
-		
 			String receivedString[] = receive(portNumber).split(" ");
 			if(receivedString[0].equals("UPDATE_POSITION")){
 				if(Integer.parseInt(receivedString[1]) < 5){	

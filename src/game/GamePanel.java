@@ -27,6 +27,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	private Player player3;
 	private Player player4;
 	private Monster monster;
+	private Monster monster2;
+	private Monster monster3;
+	private Monster monster4;
+	private Monster monster5;
+	private Monster monster6;
+	private Monster monster7;
+	private Monster monster8;
+	private Monster monster9;
 	private TileMap tileMap;
 	
 	private Client controller;
@@ -60,6 +68,20 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		requestFocus();
 	}
 	
+	public String getMonsterCoordinates(){
+		String temp = "";
+		temp = monster.calculateMonsterCoordinates() + ",";
+		temp += monster2.calculateMonsterCoordinates() + ",";
+		temp += monster3.calculateMonsterCoordinates() + ",";
+		temp += monster4.calculateMonsterCoordinates() + ",";
+		temp += monster5.calculateMonsterCoordinates() + ",";
+		temp += monster6.calculateMonsterCoordinates() + ",";
+		temp += monster7.calculateMonsterCoordinates() + ",";
+		temp += monster8.calculateMonsterCoordinates() + ",";
+		temp += monster9.calculateMonsterCoordinates() + ",";
+		return temp;
+	}
+	
 	public void setInitialPosition(double x, double y){
 		initialPlayerX = x;
 		initialPlayerY = y;
@@ -84,18 +106,58 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		}
 	}
 	
-	public String getMonsterCoordinates(){
-		return monster.calculateMonsterCoordinates();
-	}
-	
 	public void setMonsterCoordinates(String message){
-		if(message.equals("DEAD")){
-			monster.kill();
-		}else{
-			String coordinates[] = message.split(",");
-			monster.update(Double.parseDouble(coordinates[0]), Double.parseDouble(coordinates[1]));
+		String coordinates[] = message.split(",");
+		int counter = 0;
+		for(int a = 0; a< coordinates.length;){
+			if(coordinates[a].equals("DEAD")){
+				if(counter == 0){
+					monster.kill();
+				}else if(counter ==1){
+					monster2.kill();
+				}else if(counter == 2){
+					monster3.kill();
+				}else if(counter == 3){
+					monster4.kill();
+				}else if(counter == 4){
+					monster5.kill();
+				}else if(counter == 5){
+					monster6.kill();
+				}else if(counter == 6){
+					monster7.kill();
+				}else if(counter == 7){
+					monster8.kill();
+				}else if(counter == 8){
+					monster9.kill();
+				}
+				a++;
+				counter++;
+			}else{
+				if(counter == 0){
+					monster.update(Double.parseDouble(coordinates[a]), Double.parseDouble(coordinates[a+1]));
+				}else if(counter == 1){
+					monster2.update(Double.parseDouble(coordinates[a]), Double.parseDouble(coordinates[a+1]));
+				}else if(counter == 2){
+					monster3.update(Double.parseDouble(coordinates[a]), Double.parseDouble(coordinates[a+1]));
+				}else if(counter == 3){
+					monster4.update(Double.parseDouble(coordinates[a]), Double.parseDouble(coordinates[a+1]));
+				}else if(counter == 4){
+					monster5.update(Double.parseDouble(coordinates[a]), Double.parseDouble(coordinates[a+1]));
+				}else if(counter == 5){
+					monster6.update(Double.parseDouble(coordinates[a]), Double.parseDouble(coordinates[a+1]));
+				}else if(counter == 6){
+					monster7.update(Double.parseDouble(coordinates[a]), Double.parseDouble(coordinates[a+1]));
+				}else if(counter == 7){
+					monster8.update(Double.parseDouble(coordinates[a]), Double.parseDouble(coordinates[a+1]));
+				}else if(counter == 8){
+					monster9.update(Double.parseDouble(coordinates[a]), Double.parseDouble(coordinates[a+1]));
+				}
+				a += 2;
+				counter++;
+			}
 		}
 	}
+	
 	
 	public String getDiedPlayer(){
 		String temp = "";
@@ -133,6 +195,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		players[0] = player;
 		players[1] = player2;
 		monster = new Monster(tileMap, 240, 48, size, size, players);
+		monster2 = new Monster(tileMap, 48, 240, size, size, players);
+		monster3 = new Monster(tileMap, 1056, 48, size, size, players);
+		monster4 = new Monster(tileMap, 240, 528, size, size, players);
+		monster5 = new Monster(tileMap, 1344, 240, size, size, players);
+		monster6 = new Monster(tileMap, 1056, 528, size, size, players);
+		monster7 = new Monster(tileMap, 336, 288, size, size, players);
+		monster8 = new Monster(tileMap, 624, 432, size, size, players);
+		monster9 = new Monster(tileMap, 912, 288, size, size, players);
 	}
 	
 	public void setController(Client controller){
@@ -290,7 +360,7 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	}
 	
 	public void setBombLocation(String message[]){
-		int a = 1;
+		int a = 2;
 		for(int b = 0; b < message.length; b++){
 		}
 		while(a < message.length){
@@ -309,6 +379,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		player.draw(g);
 		player2.draw(g);
 		monster.draw(g);
+		monster2.draw(g);
+		monster3.draw(g);
+		monster4.draw(g);
+		monster5.draw(g);
+		monster6.draw(g);
+		monster7.draw(g);
+		monster8.draw(g);
+		monster9.draw(g);
 	}
 	
 	public void draw(){
