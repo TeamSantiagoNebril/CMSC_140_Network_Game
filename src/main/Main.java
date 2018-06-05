@@ -1,6 +1,5 @@
 package main;
 
-import externalJFrame.PlayerWinFrame;
 import mainMenu.MainMenuManager;
 
 public class Main {

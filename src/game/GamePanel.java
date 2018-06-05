@@ -24,8 +24,6 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	private int targetTime = 1000/FPS;
 	private Player player;
 	private Player player2;
-	private Player player3;
-	private Player player4;
 	private Monster monster;
 	private TileMap tileMap;
 	
