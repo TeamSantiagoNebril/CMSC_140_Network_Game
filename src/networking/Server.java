@@ -168,12 +168,15 @@ public class Server extends UDPNetwork implements Runnable {
 				}
 			}
 			
-			int[] pNumType = {560, 560, 560};
-			for(int counter = 0; counter < 3; counter++) {		 
-				for(int counter2 = 0; counter2 < 8; counter2++) {
+			int[] pNumType = {510, 520, 530, 540, 550, 560};
+			int counter3[] = {10,10,10,4,2,5};
+			for(int counter = 0; counter < 6; counter++) {		 
+				for(int counter2 = 0; counter2 < counter3[counter]; counter2++) {
 					powerupType.add(pNumType[counter]);
 				}
 			}
+			
+			
 			
 			Random rand = new Random();
 
@@ -181,7 +184,7 @@ public class Server extends UDPNetwork implements Runnable {
 			String yCoordinates = "";
 			String powerUp = "";
 			
-			for(int counter = 0; counter < 24; counter++) {
+			for(int counter = 0; counter < 41; counter++) {
 				int position = rand.nextInt(powerupRandomizerVariable.size());
 				int pValue = rand.nextInt(powerupType.size());
 		        xCoordinates += powerupRandomizerVariable.get(position).x + ",";

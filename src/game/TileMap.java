@@ -158,7 +158,7 @@ public class TileMap extends Thread{
 		return map[row][col];
 	}
 	 	
-	public void putBomb(int col, int row, int flameMultiplier, Player player, boolean pierce){
+	public void putBomb(int col, int row, int flameMultiplier, Player player, boolean pierce, int playerId){
 		int threadRow = row;
 		int threadCol = col;
 		new Thread(){
@@ -166,7 +166,7 @@ public class TileMap extends Thread{
 			ArrayList <Integer> burnBlockCoordinates = new ArrayList<Integer>();
 			public void run(){ //animating a tile to have bomb or flame
 				int localFlameIdentifier;
-				map[threadRow][threadCol] = 3;
+				map[threadRow][threadCol] = playerId;
 				isBombed = false;
 
 				try {
@@ -179,7 +179,7 @@ public class TileMap extends Thread{
 				localFlameIdentifier = flameIdentifier;
 
 				burnBlockCoordinates.clear();
-				burnBlockCoordinates = setFlames(threadRow, threadCol, flameIdentifier, flameMultiplier, pierce);
+				burnBlockCoordinates = setFlames(threadRow, threadCol, flameIdentifier, flameMultiplier, pierce, playerId);
 				flameIdentifier++;
 
 				for(int a = 0; a < 10; a++){
@@ -212,7 +212,7 @@ public class TileMap extends Thread{
 					}
 				}
 
-				removeFlame(threadRow, threadCol, localFlameIdentifier, flameMultiplier);
+				removeFlame(threadRow, threadCol, localFlameIdentifier, flameMultiplier, playerId);
 			}
 			public void draw2(Graphics2D g){
 				for(int a = 0; a < burnBlockCoordinates.size(); ){
@@ -244,7 +244,7 @@ public class TileMap extends Thread{
 		
 	}
 	
-	public ArrayList<Integer> setFlames(int row, int col, int set, int numberOfFlames, boolean pierce){
+	public ArrayList<Integer> setFlames(int row, int col, int set, int numberOfFlames, boolean pierce, int playerId){
 		boolean colLeft = true;
 		boolean colRight = true;
 		boolean rowUp = true;
@@ -261,7 +261,7 @@ public class TileMap extends Thread{
 						}
 						burnBlockCoordinates.add(row-a);
 						burnBlockCoordinates.add(col);
-					}else if(map[row - a][col] == 3){
+					}else if(map[row - a][col] == playerId){
 						map[row - a][col] = set*100;
 					}else{
 						map[row - a][col] = set;
@@ -279,7 +279,7 @@ public class TileMap extends Thread{
 						}
 						burnBlockCoordinates.add(row+a);
 						burnBlockCoordinates.add(col);
-					}else if(map[row + a][col] == 3){
+					}else if(map[row + a][col] == playerId){
 						map[row + a][col] = set*100;
 					}else{
 						map[row + a][col] = set;
@@ -315,7 +315,7 @@ public class TileMap extends Thread{
 						}
 						burnBlockCoordinates.add(row);
 						burnBlockCoordinates.add(col+a);
-					}else if(map[row][col + a] == 3){
+					}else if(map[row][col + a] == playerId){
 						map[row][col + a] = set*100;
 					}else{
 						map[row][col + a] = set;
@@ -328,12 +328,12 @@ public class TileMap extends Thread{
 		return burnBlockCoordinates;
 	}
 	
-	public void removeFlame(int row, int col, int comp, int numberOfFlames){
+	public void removeFlame(int row, int col, int comp, int numberOfFlames, int playerId){
 		if(map[row][col] == comp){			
 			map[row][col] = 1;
 			 checkIfPowerup(row, col);
 		}else if(map[row][col] == comp*100){
-			map[row][col] = 3;
+			map[row][col] = playerId;
 		}
 		
 		for(int a = 1; a <= numberOfFlames; a++){
@@ -342,7 +342,7 @@ public class TileMap extends Thread{
 					map[row - a][col] = 1;
 					checkIfPowerup(row-a, col);
 				}else if(map[row - a][col] == comp*100){
-					map[row - a][col] = 3;
+					map[row - a][col] = playerId;
 				}
 			}
 			if(row + a < mapHeight){
@@ -350,7 +350,7 @@ public class TileMap extends Thread{
 					map[row + a][col] = 1;
 					checkIfPowerup(row+a, col);
 				}else if(map[row + a][col] == comp*100){
-					map[row + a][col] = 3;
+					map[row + a][col] = playerId;
 				}
 			}
 			if(col - a > 0){
@@ -358,7 +358,7 @@ public class TileMap extends Thread{
 					map[row][col - a] = 1;
 					checkIfPowerup(row, col-a);
 				}else if(map[row][col - a] == comp*100){
-					map[row][col - a] = 3;
+					map[row][col - a] = playerId;
 				}
 			}
 			if(col + a < mapWidth){
@@ -366,7 +366,7 @@ public class TileMap extends Thread{
 					map[row][col + a] = 1;
 					checkIfPowerup(row, col+a);
 				}else if(map[row][col + a] == comp*100){
-					map[row][col + a] = 3;
+					map[row][col + a] = playerId;
 				}
 			}
 		}
@@ -422,7 +422,7 @@ public class TileMap extends Thread{
 					g.drawImage(walkable, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}else if(current == 2){
 					g.drawImage(soft_block, col*tileSize, row*tileSize, tileSize, tileSize, null);
-				}else if(current == 3){
+				}else if(current == 600 || current == 601){
 					g.drawImage(bomb, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}else if(current >= 5){
 					g.drawImage(fire, col*tileSize, row*tileSize, tileSize, tileSize, null);

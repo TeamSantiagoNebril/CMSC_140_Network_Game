@@ -40,7 +40,6 @@ public class Player{
 	private double startY;
 	private PlayerMovementAnimation animation;
 	private static int playerNumber;
-	private boolean bombLocation;
 	private double bombX;
 	private double bombY;
 	private boolean isAnimatingDeadImage;
@@ -54,6 +53,9 @@ public class Player{
 	private boolean heal;
 	private String powerUpCoordinates;
 	
+	
+	private static int playerIdCount = 600;
+	private int playerId;
 	private boolean appear = true;
 	
 	private String bombCoordinates = "";
@@ -85,6 +87,8 @@ public class Player{
 		calculatedY = y;
 		startX = x;
 		startY = y;
+		playerId = playerIdCount;
+		playerIdCount++;
 		
 		animation = new PlayerMovementAnimation(++playerNumber);
 		powerupLocations = tileMap.getPowerupLocations();
@@ -121,6 +125,8 @@ public class Player{
 	}
 
 	public void update(double x, double y){
+		
+		
 		if(appear){
 			faceleft = false;
 			double dx = x - this.x;
@@ -183,8 +189,8 @@ public class Player{
 	}
 	
 	public boolean isplayerDead(){
-		if(calculateDestination((int)x, (int)y) >= 4 && !isAnimatingDeadImage || calculateDestination((int)x, (int)y+height - 1) >= 4 && !isAnimatingDeadImage ||
-				calculateDestination((int)x + width -1 , (int)y) >= 4 && !isAnimatingDeadImage || dead){
+		if(calculateDestination((int)x, (int)y) >= 4 && !isAnimatingDeadImage && calculateDestination((int)x, (int)y) < 600|| calculateDestination((int)x, (int)y+height - 1) >= 4 && !isAnimatingDeadImage && calculateDestination((int)x, (int)y+height - 1) < 4 ||
+				calculateDestination((int)x + width -1 , (int)y) >= 4 && !isAnimatingDeadImage && calculateDestination((int)x + width -1 , (int)y) < 600|| dead){
 			dead = false;
 			return true;
 		}
@@ -270,20 +276,11 @@ public class Player{
 					tempy2 = tempy + height - 1;
 				}
 
-				boolean allow = false;
-
-				if(((int)tileMap.getExactTileLocation(bombX) == (int)tileMap.getExactTileLocation(calculatedX) || (int)tileMap.getExactTileLocation(bombX) == (int)tileMap.getExactTileLocation(calculatedX + width -1) ||                     //kun kabubutang la niya bomb pwede pa hiya magmove
-						(int)tileMap.getExactTileLocation(bombY) == (int)tileMap.getExactTileLocation(calculatedY) || (int)tileMap.getExactTileLocation(bombY) == (int)tileMap.getExactTileLocation(calculatedY + height - 1)) && bombLocation){
-					if(calculateDestination(tempx, tempy) == 3 && ((int)tileMap.getExactTileLocation(tempx) == (int)tileMap.getExactTileLocation(bombX) && (int)tileMap.getExactTileLocation(tempy) == (int)tileMap.getExactTileLocation(bombY))){
-						allow = true;
-					}
-					if(calculateDestination(tempx2, tempy2) == 3 && ((int)tileMap.getExactTileLocation(tempx2) == (int)tileMap.getExactTileLocation(bombX) && (int)tileMap.getExactTileLocation(tempy2) == (int)tileMap.getExactTileLocation(bombY))){
-						allow = true;
-					}
-				}
-
 				if(calculateDestination(tempx, tempy) == 1 && calculateDestination(tempx2, tempy2) == 1 ||
-						(calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx2, tempy2) >= 4) ||allow){ //is tile walkable
+						calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx, tempy) < 600 && calculateDestination(tempx2, tempy2) >= 4 && calculateDestination(tempx2, tempy2) < 600 || 
+						(calculateDestination(tempx, tempy) == playerId && calculateDestination(tempx2, tempy2) == playerId) &&
+						(calculateDestination(calculatedX, calculatedY) == playerId || calculateDestination(calculatedX + width - 1, calculatedY) == playerId ||
+						calculateDestination(calculatedX, calculatedY + height - 1) == playerId || calculateDestination(calculatedX + width - 1, calculatedY + height - 1) == playerId)){ //is tile walkable
 					
 					calculatedX = tox;
 					calculatedY = toy;
@@ -394,20 +391,6 @@ public class Player{
 				}
 			}
 			
-			if(up || down){
-				if(bombLocation && (int)tileMap.getExactTileLocation(calculatedY) != (int)tileMap.getExactTileLocation(bombY) && (int)tileMap.getExactTileLocation(calculatedY + height - 1) != (int)tileMap.getExactTileLocation(bombY)){
-					bombLocation = false;
-				}
-			}else if( right ||  left){
-				if(bombLocation && (int)tileMap.getExactTileLocation(calculatedX) != (int)tileMap.getExactTileLocation(bombX) && (int)tileMap.getExactTileLocation(calculatedX + width - 1) != (int)tileMap.getExactTileLocation(bombX)){
-					bombLocation = false;
-				}
-			}
-
-			if(calculateDestination(bombX, bombY) != 3){
-				bombLocation = false;
-			}
-
 			if(!clicked){  //make bomberman stop if no keys are pressed
 				dx = 0;
 				dy = 0;
@@ -548,8 +531,8 @@ public class Player{
 	
 	public void putBomb(int col, int row){
 		if(bombNumber > 0){
-			bombLocation = true;
-			tileMap.putBomb(col, row, flameMultiplier, this, pierce);
+			
+			tileMap.putBomb(col, row, flameMultiplier, this, pierce, playerId);
 			bombX = col*width;
 			bombY = row*height;
 			bombNumber--;
