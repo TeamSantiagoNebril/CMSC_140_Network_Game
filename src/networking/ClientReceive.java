@@ -10,6 +10,7 @@ public class ClientReceive extends UDPNetwork implements Runnable{
 	private GamePanel gamePanel;
 	private String hostIPAddress;
 	private int hostPortNumber;
+	private String receivedBombId = "";
 	public ClientReceive(int portNumber , GamePanel gamePanel, String hostIPAddress, int hostPortNumber){
 		this.portNumber = portNumber;
 		this.gamePanel = gamePanel;
@@ -18,15 +19,29 @@ public class ClientReceive extends UDPNetwork implements Runnable{
 	}
 	
 	public void run(){
-		
+		int counter = 0;
 		while(true){
 			String receivedString[] = receive(portNumber).split(" ");
-			if(receivedString[0].equals("UPDATE_POSITION")){
-				//System.out.println(receivedString[1]);
-				gamePanel.updatePositions(receivedString[1]);
-			}else if(receivedString[0].equals("BOMB")){
-				gamePanel.setBombLocation(receivedString);
-			}
+			//new Thread(){
+				//public void run(){
+					if(receivedString[0].equals("UPDATE_POSITION")){
+						gamePanel.updatePositions(receivedString[1]);
+					}else if(receivedString[0].equals("BOMB_COORDINATES")){
+						if(!receivedBombId.equals(receivedString[1])){
+							gamePanel.setBombLocation(receivedString);
+							receivedBombId = receivedString[1];
+						}
+					}else if(receivedString[0].equals("KILL")){
+						gamePanel.killPlayer(receivedString[1]);
+					}else if(receivedString[0].equals("MONSTER")){
+						gamePanel.setMonsterCoordinates(receivedString[1]);
+					}else if(receivedString[0].equals("POWERUP")){
+						gamePanel.setPowerUp(receivedString);
+					}else if(receivedString[0].equals("DIED")){
+						gamePanel.setDiedPlayer(receivedString);
+					}
+				//}
+			//}.start();
 		}
 	}
 	

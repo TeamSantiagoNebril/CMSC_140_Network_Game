@@ -40,19 +40,39 @@ public class Player{
 	private double startY;
 	private PlayerMovementAnimation animation;
 	private static int playerNumber;
-	private boolean bombLocation;
 	private double bombX;
 	private double bombY;
 	private boolean isAnimatingDeadImage;
 	
-	private String bombCoordinates = "";
+	private boolean bombMax;
+	private boolean skate;
+	private boolean fire;
+	private boolean fireDown;
+	private boolean pierceBomb;
+	private boolean redBomb;
+	private boolean heal;
+	private String powerUpCoordinates;
 	
+	
+	private static int playerIdCount = 600;
+	private int playerId;
+	private boolean appear = true;
+	
+	private String bombCoordinates = "";
+	private boolean deadFlag = false;
+	private boolean dead;
 	private int maxBomb = 1;  
 	private double moveSpeed;
-	private int flameMultiplier;
+	private int flameMultiplier = 1;
 	private ArrayList<Point> powerupLocations;
 	
-	 
+	private boolean pierce;
+	private int maxBombNumber = 3;
+	private int bombNumber = maxBombNumber;
+	
+	private boolean died;
+	private int threadRunning = 0;
+	
 	public Player(){}
 	 
 	public Player(TileMap tileMap, int spriteSize, int x, int y){
@@ -67,6 +87,8 @@ public class Player{
 		calculatedY = y;
 		startX = x;
 		startY = y;
+		playerId = playerIdCount;
+		playerIdCount++;
 		
 		animation = new PlayerMovementAnimation(++playerNumber);
 		powerupLocations = tileMap.getPowerupLocations();
@@ -84,7 +106,6 @@ public class Player{
 	public void calculateBomb(){
 		if(lastdx != 0){
 			bombCoordinates = putBombHorizontal((int)x, (int)y);
-
 		}else if(lastdy != 0){
 			bombCoordinates = putBombVertical((int)x, (int)y);
 		}
@@ -93,6 +114,7 @@ public class Player{
 	public String getBombCoordinates(){
 		String temp = bombCoordinates;
 		bombCoordinates = "";
+		isBombed = false;
 		return temp;
 	}
 	
@@ -101,54 +123,86 @@ public class Player{
 		int row = tileMap.getRowTile((int) y );
 		return tileMap.getTile(row, col);
 	}
-	
-	public Boolean isDead(int x, int y){
-		if(calculateDestination(x, y) >= 4)
-			return true;
-		return false;
+
+	public void update(double x, double y){
+		
+		
+		if(appear){
+			faceleft = false;
+			double dx = x - this.x;
+			double dy = y - this.y;
+			if(dy < 0){  // for bomberman sprite
+				lastdx = 0;
+				lastdy = -moveSpeed;
+				animation.setMove(1);
+			}else if(dy > 0){
+				lastdx = 0;
+				lastdy = moveSpeed;
+				animation.setMove(2);
+			}else if(dx > 0){
+
+				lastdx = moveSpeed;
+				lastdy = 0;
+				animation.setMove(3);
+			}else if(dx < 0){
+				lastdx = -moveSpeed;
+				lastdy = 0;
+				faceleft = true;
+				animation.setMove(3);
+			}else{
+				animation.setMove(12);
+			}
+
+			this.x = x;
+			this.y = y;
+		}
 	}
+
 	
 	public void dead(){
 		life--;
-		x = startX;
-		y = startY;
+		if(life == 0){
+			died = true;
+		}else{
+			x = startX;
+			y = startY;
+			calculatedX = x;
+			calculatedY = y;
+		}
 		System.out.println("Life: " + life );
 	}
 	
-	public void update(double x, double y){
-		faceleft = false;
-		double dx = x - this.x;
-		double dy = y - this.y;
-		if(dy < 0){  // for bomberman sprite
-			lastdx = 0;
-			lastdy = -moveSpeed;
-			animation.setMove(1);
-		}else if(dy > 0){
-			lastdx = 0;
-			lastdy = moveSpeed;
-			animation.setMove(2);
-		}else if(dx > 0){
-			
-			lastdx = moveSpeed;
-			lastdy = 0;
-			animation.setMove(3);
-		}else if(dx < 0){
-			lastdx = -moveSpeed;
-			lastdy = 0;
-			faceleft = true;
-			animation.setMove(3);
-		}else{
-			animation.setMove(12);
+	public boolean isDiedPlayer(){
+		return died;
+	}
+	
+	public void diedPlayer(){
+		appear = false;
+	}
+	
+	public double getX(){
+		return x;
+	}
+	
+	public double getY(){
+		return y;
+	}
+	
+	public boolean isplayerDead(){
+		if(calculateDestination((int)x, (int)y) >= 4 && !isAnimatingDeadImage && calculateDestination((int)x, (int)y) < 600|| calculateDestination((int)x, (int)y+height - 1) >= 4 && !isAnimatingDeadImage && calculateDestination((int)x, (int)y+height - 1) < 4 ||
+				calculateDestination((int)x + width -1 , (int)y) >= 4 && !isAnimatingDeadImage && calculateDestination((int)x + width -1 , (int)y) < 600|| dead){
+			dead = false;
+			return true;
 		}
-		
-		this.x = x;
-		this.y = y;
-
+		return false;
+	}
+	
+	public void killPlayer(){
+		dead = true;
 	}
 	
 	public void deadPlayer(){
-		if(isDead((int)calculatedX, (int)calculatedY) && !isAnimatingDeadImage || isDead((int)calculatedX, (int)calculatedY + height - 1) && !isAnimatingDeadImage ||
-				isDead((int)calculatedX + width - 1, (int)calculatedY) && !isAnimatingDeadImage ){
+		if(!isAnimatingDeadImage){
 			new Thread(){
 				public void run(){
 					isAnimatingDeadImage = true;
@@ -160,12 +214,14 @@ public class Player{
 							e.printStackTrace();
 						}
 					}
-					isAnimatingDeadImage = false;
+					animation.setMove(13);
 					dead();
+					isAnimatingDeadImage = false;
 				}				
 			}.start();
 		}
 	}
+	
 	
 	public void calculateMovement(){
 		String testing = "";
@@ -220,22 +276,11 @@ public class Player{
 					tempy2 = tempy + height - 1;
 				}
 
-				boolean allow = false;
-
-				if(((int)tileMap.getExactTileLocation(bombX) == (int)tileMap.getExactTileLocation(calculatedX) || (int)tileMap.getExactTileLocation(bombX) == (int)tileMap.getExactTileLocation(calculatedX + width -1) ||                     //kun kabubutang la niya bomb pwede pa hiya magmove
-						(int)tileMap.getExactTileLocation(bombY) == (int)tileMap.getExactTileLocation(calculatedY) || (int)tileMap.getExactTileLocation(bombY) == (int)tileMap.getExactTileLocation(calculatedY + height - 1)) && bombLocation){
-					if(calculateDestination(tempx, tempy) == 3 && ((int)tileMap.getExactTileLocation(tempx) == (int)tileMap.getExactTileLocation(bombX) && (int)tileMap.getExactTileLocation(tempy) == (int)tileMap.getExactTileLocation(bombY))){
-						allow = true;
-					}
-					if(calculateDestination(tempx2, tempy2) == 3 && ((int)tileMap.getExactTileLocation(tempx2) == (int)tileMap.getExactTileLocation(bombX) && (int)tileMap.getExactTileLocation(tempy2) == (int)tileMap.getExactTileLocation(bombY))){
-						allow = true;
-					}
-				}
-
 				if(calculateDestination(tempx, tempy) == 1 && calculateDestination(tempx2, tempy2) == 1 ||
-						(calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx2, tempy2) >= 4) ||allow){ //is tile walkable
-					
-					testing = "first";
+						calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx, tempy) < 600 && calculateDestination(tempx2, tempy2) >= 4 && calculateDestination(tempx2, tempy2) < 600 || 
+						(calculateDestination(tempx, tempy) == playerId && calculateDestination(tempx2, tempy2) == playerId) &&
+						(calculateDestination(calculatedX, calculatedY) == playerId || calculateDestination(calculatedX + width - 1, calculatedY) == playerId ||
+						calculateDestination(calculatedX, calculatedY + height - 1) == playerId || calculateDestination(calculatedX + width - 1, calculatedY + height - 1) == playerId)){ //is tile walkable
 					
 					calculatedX = tox;
 					calculatedY = toy;
@@ -304,7 +349,6 @@ public class Player{
 						if(checkDominance() && calculateDestination((int)tox, (int)toy) == 1 && calculateDestination((int)tox + width - 1, (int)toy + height - 1) == 1 ){
 							calculatedX = tempx;
 							calculatedY = tempy;
-							testing = "second";
 
 						}else{
 							tox = calculatedX + lastdx;
@@ -337,7 +381,7 @@ public class Player{
 									(calculateDestination(tempx, tempy) >= 4 && calculateDestination(tempx2, tempy2) >= 4)){ //is tile walkable
 								calculatedX = tox;
 								calculatedY = toy;
-								testing = "third";
+
 							}else{
 								dx = 0;
 								dy = 0;
@@ -347,66 +391,109 @@ public class Player{
 				}
 			}
 			
-			if(up || down){
-				if(bombLocation && (int)tileMap.getExactTileLocation(calculatedY) != (int)tileMap.getExactTileLocation(bombY) && (int)tileMap.getExactTileLocation(calculatedY + height - 1) != (int)tileMap.getExactTileLocation(bombY)){
-					bombLocation = false;
-				}
-			}else if( right ||  left){
-				if(bombLocation && (int)tileMap.getExactTileLocation(calculatedX) != (int)tileMap.getExactTileLocation(bombX) && (int)tileMap.getExactTileLocation(calculatedX + width - 1) != (int)tileMap.getExactTileLocation(bombX)){
-					bombLocation = false;
-				}
-			}
-
-			if(calculateDestination(bombX, bombY) != 3){
-				bombLocation = false;
-			}
-
 			if(!clicked){  //make bomberman stop if no keys are pressed
 				dx = 0;
 				dy = 0;
 			}
 		}
 
-
-			if(tempCalX - calculatedX < -3 || tempCalX - calculatedX > 3){
-				System.out.println("pota yawa nimeroy");
-				System.out.println(testing);
-			}
-			if(tempCalY - calculatedY < -3 || tempCalY - calculatedY > 3){
-				System.out.println("pota yawa nimeroy part 2: " + (tempCalY - calculatedY));
-				System.out.println(testing);
-			}
-		
-		/*int x2 = (int)tileMap.getExactTileLocation(calculatedY);
+		int x2 = (int)tileMap.getExactTileLocation(calculatedY);
 		int y2 = (int)tileMap.getExactTileLocation(calculatedX);
 		for(int i = 0; i < powerupLocations.size(); i++) {
 			if(x2 == powerupLocations.get(i).x && y2 == powerupLocations.get(i).y) {
 				switch(tileMap.getPowerTile(x2, y2)) { 
 				case 511: //bomb_powerup;
-					if(maxBomb != 2) {
-						maxBomb++;
-					}
-					tileMap.normalizePowerTile(x2, y2);
-					powerupLocations.remove(i);
+					powerUpCoordinates = x2 + " " + y2;
+					bombMax = true;
 					break;
-				case 521: //movespeed_powerup;
+				case 521: 
 					if(moveSpeed < 4.0) {
-						moveSpeed += 1.0;
+						moveSpeed = 4.0;
 					}
-					tileMap.normalizePowerTile(x2, y2);
-					powerupLocations.remove(i);
+					powerUpCoordinates = x2 + " " + y2;
+					skate = true;
 					break;
-				case 531: //flame powerup
-					tileMap.normalizePowerTile(x2, y2);
-					powerupLocations.remove(i);
-					if(flameMultiplier < 4) {
-						flameMultiplier++;
-					}
-					System.out.println("fff");
+				case 531:
+					powerUpCoordinates = x2 + " " + y2;
+					fire = true;
+					break;
+				case 541: 
+					powerUpCoordinates = x2 + " " + y2;
+					pierceBomb = true;
+					break;
+				case 551: 
+					powerUpCoordinates = x2 + " " + y2;
+					redBomb = true;
+					break;
+				case 561: 
+					powerUpCoordinates = x2 + " " + y2;
+					heal = true;
 					break;
 				}
 			}
-		}*/		
+		}		
+	}
+	
+	public void pierceBomb(){
+		pierce = true;
+	}
+	
+	public String getPowerUp(){
+		String temp = "";
+		if(skate){
+			skate = false;
+			temp = powerUpCoordinates + " 1";
+		}
+		if(fire){
+			fire = false;
+			temp = powerUpCoordinates + " 2";
+		}
+		if(bombMax){
+			bombMax = false;
+			temp = powerUpCoordinates + " 3";
+		}
+		
+		if(pierceBomb){
+			pierceBomb = false;
+			temp = powerUpCoordinates + " 4";
+		}
+		if(redBomb){
+			redBomb = false;
+			temp = powerUpCoordinates + " 5";
+		}
+		if(heal){
+			heal = false;
+			temp = powerUpCoordinates + " 6";
+		}
+		return temp;
+	}
+	
+	public void addMaxBomb(){
+		if(maxBombNumber <= 5){
+			maxBombNumber++;
+			bombNumber++;
+		}
+	}
+	
+	public void healPlayer(){
+		if(life <= 3)
+		life++;
+	}
+	
+	public void maxFlame(){
+		flameMultiplier = 26;
+	}
+	
+	public void reloadBomb(){
+		bombNumber++;
+	}
+	
+	public void addFlame(){
+		flameMultiplier++;
+	}
+	
+	public void descreaseFlame(){
+		flameMultiplier--;
 	}
 	
 	public String getUpdatedCoordinates(){
@@ -443,10 +530,13 @@ public class Player{
 	}
 	
 	public void putBomb(int col, int row){
-		bombLocation = true;
-		tileMap.putBomb(col, row);
-		bombX = col*width;
-		bombY = row*height;
+		if(bombNumber > 0){
+			
+			tileMap.putBomb(col, row, flameMultiplier, this, pierce, playerId);
+			bombX = col*width;
+			bombY = row*height;
+			bombNumber--;
+		}
 	}
 	
 	public int checkDominanceParams(){  //to return kun 70 percent or 30 percent han tile an kailangan igkita
@@ -487,12 +577,13 @@ public class Player{
 	}
 	
 	public void draw(Graphics2D g){
-		if(faceleft){
-			g.drawImage(animation.getImage(), (int)x + width, (int)y, -width, height, null);
-		}else{
-			g.drawImage(animation.getImage(), (int)x, (int)y, width, height, null);
+		if(appear){
+			if(faceleft){
+				g.drawImage(animation.getImage(), (int)x + width, (int)y, -width, height, null);
+			}else{
+				g.drawImage(animation.getImage(), (int)x, (int)y, width, height, null);
+			}
 		}
 	}
 	
 }
-

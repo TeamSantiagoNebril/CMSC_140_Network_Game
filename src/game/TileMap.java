@@ -37,7 +37,10 @@ public class TileMap extends Thread{
     private Image bomb_powerup = t.getImage("assets/images/Sprites/Powerups/BombPowerup.png");  
     private Image speed_powerup = t.getImage("assets/images/Sprites/Powerups/SpeedPowerup.png");
     private Image flame_powerup = t.getImage("assets/images/Sprites/Powerups/FlamePowerup.png");
- 
+    private Image life_powerup = t.getImage("assets/images/Sprites/Powerups/life.png");
+    private Image pierceBomb_powerup = t.getImage("assets/images/Sprites/Powerups/pierceBomb.png");
+    private Image redBomb_powerup = t.getImage("assets/images/Sprites/Powerups/redBomb.png");
+    
     private Image bomb1 = t.getImage("assets/images/Sprites/Bomb/Bomb_f01.png");
     private Image bomb2 = t.getImage("assets/images/Sprites/Bomb/Bomb_f02.png");
     private Image bomb3 = t.getImage("assets/images/Sprites/Bomb/Bomb_f03.png");
@@ -55,10 +58,9 @@ public class TileMap extends Thread{
     private Image softBlockBurn;
     private Graphics2D g;
     
-    private Player player1;
-    private Player player2;
-    private Player player3;
-    private Player player4;
+    private int flameMultiplier = 0;
+    
+    private Player bomber;
     
 	public TileMap(String file, int tileSize){
 		this.tileSize = tileSize;
@@ -81,52 +83,32 @@ public class TileMap extends Thread{
 				for(int col = 0; col < mapWidth; col++){
 					map[row][col] = Integer.parseInt(tokens[col]);
 					powerupMap[row][col] = Integer.parseInt(tokens[col]);
-					if(Integer.parseInt(tokens[col]) == 2) {
-						powerupRandomizerVariable.add(new Point(row, col));
-					}
-			 
 				}
 			}
 			
-			int[] pNumType = {520, 520, 520};
-			for(int counter = 0; counter < 3; counter++) {		 
-				for(int counter2 = 0; counter2 < 8; counter2++) {
-					powerupType.add(pNumType[counter]);
-		 
-				}
-		 
-			}
-			
-			Random rand = new Random();
-			for(int counter = 0; counter < 24; counter++) {
-				int position = rand.nextInt(powerupRandomizerVariable.size());
-				int pValue = rand.nextInt(powerupType.size());
-		        powerupMap[powerupRandomizerVariable.get(position).x][powerupRandomizerVariable.get(position).y] = powerupType.get(pValue);
-		        powerupLocations.add(new Point(powerupRandomizerVariable.get(position).x , powerupRandomizerVariable.get(position).y));
-		        powerupRandomizerVariable.remove(position);
-		        powerupType.remove(pValue);
-			}
-
 		}catch(FileNotFoundException e){
 			System.err.println("File Not Found");
 			System.exit(-1);
 		}catch(IOException e){}
 	}
 	
+	public void setMap(String xCoordinate, String yCoordinate, String powerUp){
+		String xCoordinates[] = xCoordinate.split(",");
+		String yCoordinates[] = yCoordinate.split(",");
+		String powerUps[] = powerUp.split(",");
+		
+		for(int a = 0; a < 24; a++){
+			powerupMap[Integer.parseInt(xCoordinates[a])][Integer.parseInt(yCoordinates[a])] = Integer.parseInt(powerUps[a]);
+			powerupLocations.add(new Point(Integer.parseInt(xCoordinates[a]), Integer.parseInt(yCoordinates[a])));
+		}
+	}
+	
 	public void normalizePowerTile(int row, int col){
-		powerupMap[row][col] = 1;
-		 
+		if(powerupMap[row][col] != 1){
+			powerupMap[row][col] = 1;
+		}
 	}
-		 
-	
-	public void setPlayer(Player player1, Player player2, Player player3, Player player4) {
-		this.player1 = player1;
-		this.player2 = player2;
-		this.player3 = player3;
-		this.player4 = player4;
-	}
-	
-	
+		
 	public int getPowerTile(int row, int col){
 		return powerupMap[row][col];
 	}
@@ -176,10 +158,71 @@ public class TileMap extends Thread{
 		return map[row][col];
 	}
 	 	
-	public void putBomb(int col, int row){
-		bombCol = col;
-		bombRow = row;
-		isBombed = true;
+	public void putBomb(int col, int row, int flameMultiplier, Player player, boolean pierce, int playerId){
+		int threadRow = row;
+		int threadCol = col;
+		new Thread(){
+
+			ArrayList <Integer> burnBlockCoordinates = new ArrayList<Integer>();
+			public void run(){ //animating a tile to have bomb or flame
+				int localFlameIdentifier;
+				map[threadRow][threadCol] = playerId;
+				isBombed = false;
+
+				try {
+					Thread.sleep(3000);
+				} catch (InterruptedException e) {
+					e.printStackTrace();
+				}
+
+				player.reloadBomb();
+				localFlameIdentifier = flameIdentifier;
+
+				burnBlockCoordinates.clear();
+				burnBlockCoordinates = setFlames(threadRow, threadCol, flameIdentifier, flameMultiplier, pierce, playerId);
+				flameIdentifier++;
+
+				for(int a = 0; a < 10; a++){
+					if(a == 0){
+						softBlockBurn = softBlockBurn1;
+					}else if(a == 1){
+						softBlockBurn = softBlockBurn1;
+					}else if(a == 2){
+						softBlockBurn = softBlockBurn2;
+					}else if(a == 3){
+						softBlockBurn = softBlockBurn2;
+					}else if(a == 4){
+						softBlockBurn = softBlockBurn3;
+					}else if(a == 5){
+						softBlockBurn = softBlockBurn3;
+					}else if(a == 6){
+						softBlockBurn = softBlockBurn4;
+					}else if(a == 7){
+						softBlockBurn = softBlockBurn4;
+					}else if(a == 8){
+						softBlockBurn = softBlockBurn5;
+					}else if(a == 8){
+						softBlockBurn = softBlockBurn5;
+					}
+					draw2(g);
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+				}
+
+				removeFlame(threadRow, threadCol, localFlameIdentifier, flameMultiplier, playerId);
+			}
+			public void draw2(Graphics2D g){
+				for(int a = 0; a < burnBlockCoordinates.size(); ){
+					int row = burnBlockCoordinates.get(a);
+					int col = burnBlockCoordinates.get(a+1);
+					a += 2;
+					g.drawImage(softBlockBurn, col*tileSize, row*tileSize, tileSize, tileSize, null);
+				}
+			}
+		}.start();	
 	}
 	
 	public double getExactTileLocation(double i){
@@ -198,168 +241,133 @@ public class TileMap extends Thread{
 		if(flameIdentifier == 500){
 			flameIdentifier = 5;
 		}
-		if(isBombed){
-			int threadRow = bombRow;
-			int threadCol = bombCol;
-			new Thread(){
-				
-				ArrayList <Integer> burnBlockCoordinates = new ArrayList<Integer>();
-				public void run(){ //animating a tile to have bomb or flame
-					int localFlameIdentifier;
-					map[threadRow][threadCol] = 3;
-					isBombed = false;
-					
-					try {
-						Thread.sleep(3000);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					
-					localFlameIdentifier = flameIdentifier;
-					burnBlockCoordinates.clear();
-					burnBlockCoordinates = setFlames(threadRow, threadCol, flameIdentifier);
-					flameIdentifier++;
-					
-					for(int a = 0; a < 10; a++){
-						if(a == 0){
-							softBlockBurn = softBlockBurn1;
-						}else if(a == 1){
-							softBlockBurn = softBlockBurn1;
-						}else if(a == 2){
-							softBlockBurn = softBlockBurn2;
-						}else if(a == 3){
-							softBlockBurn = softBlockBurn2;
-						}else if(a == 4){
-							softBlockBurn = softBlockBurn3;
-						}else if(a == 5){
-							softBlockBurn = softBlockBurn3;
-						}else if(a == 6){
-							softBlockBurn = softBlockBurn4;
-						}else if(a == 7){
-							softBlockBurn = softBlockBurn4;
-						}else if(a == 8){
-							softBlockBurn = softBlockBurn5;
-						}else if(a == 8){
-							softBlockBurn = softBlockBurn5;
-						}
-						draw2(g);
-						try {
-							Thread.sleep(100);
-						} catch (InterruptedException e) {
-							e.printStackTrace();
-						}
-					}
-					
-					removeFlame(threadRow, threadCol, localFlameIdentifier);
-				}
-				public void draw2(Graphics2D g){
-					for(int a = 0; a < burnBlockCoordinates.size(); ){
-						int row = burnBlockCoordinates.get(a);
-						int col = burnBlockCoordinates.get(a+1);
-						a += 2;
-						g.drawImage(softBlockBurn, col*tileSize, row*tileSize, tileSize, tileSize, null);
-					}
-				}
-			}.start();
-			
-		}
+		
 	}
 	
-	public ArrayList<Integer> setFlames(int row, int col, int set){
+	public ArrayList<Integer> setFlames(int row, int col, int set, int numberOfFlames, boolean pierce, int playerId){
+		boolean colLeft = true;
+		boolean colRight = true;
+		boolean rowUp = true;
+		boolean rowDown = true;
 		ArrayList <Integer> burnBlockCoordinates = new ArrayList<Integer>();
 		map[row][col] = set;
-		if(row -1 > 0){
-			if(map[row - 1][col] != 0){
-				if(map[row - 1][col] == 2){
-					map[row - 1][col] = 4;
-					burnBlockCoordinates.add(row-1);
-					burnBlockCoordinates.add(col);
-				}else if(map[row - 1][col] == 3){
-					map[row - 1][col] = set*100;
-				}else{
-					map[row - 1][col] = set;
+		for(int a = 1; a <= numberOfFlames; a++){
+			if(row - a > 0 && rowUp){
+				if(map[row - a][col] != 0){
+					if(map[row - a][col] == 2){
+						map[row - a][col] = 4;
+						if(!pierce){
+							rowUp = false;
+						}
+						burnBlockCoordinates.add(row-a);
+						burnBlockCoordinates.add(col);
+					}else if(map[row - a][col] == playerId){
+						map[row - a][col] = set*100;
+					}else{
+						map[row - a][col] = set;
+					}
+				}else if(!pierce){
+					rowUp = false;
 				}
 			}
-		}
-		if(row + 1 < mapHeight){
-			if(map[row + 1][col] != 0){
-				if(map[row + 1][col] == 2){
-					map[row + 1][col] = 4;
-					burnBlockCoordinates.add(row+1);
-					burnBlockCoordinates.add(col);
-				}else if(map[row + 1][col] == 3){
-					map[row + 1][col] = set*100;
-				}else{
-					map[row + 1][col] = set;
+			if(row + a < mapHeight && rowDown){
+				if(map[row + a][col] != 0){
+					if(map[row + a][col] == 2){
+						map[row + a][col] = 4;
+						if(!pierce){
+							rowDown = false;
+						}
+						burnBlockCoordinates.add(row+a);
+						burnBlockCoordinates.add(col);
+					}else if(map[row + a][col] == playerId){
+						map[row + a][col] = set*100;
+					}else{
+						map[row + a][col] = set;
+					}
+				}else if(!pierce){
+					rowDown = false;
 				}
 			}
-		}
-		if(col - 1 > 0){
-			if(map[row][col - 1] != 0){
-				if(map[row][col - 1] == 2){
-					map[row][col - 1] = 4;
-					burnBlockCoordinates.add(row);
-					burnBlockCoordinates.add(col-1);
-				}else if(map[row][col - 1] == 3){
-					map[row][col - 1] = set*100;
-				}else{
-					map[row][col - 1] = set;
+			if(col - a > 0 && colLeft){
+				if(map[row][col - a] != 0){
+					if(map[row][col - a] == 2){
+						map[row][col - a] = 4;
+						if(!pierce){
+							colLeft = false;
+						}
+						burnBlockCoordinates.add(row);
+						burnBlockCoordinates.add(col-a);
+					}else if(map[row][col - a] == 3){
+						map[row][col - a] = set*100;
+					}else{
+						map[row][col - a] = set;
+					}
+				}else if(!pierce){
+					colLeft = false;
 				}
 			}
-		}
-		if(col + 1 < mapWidth){
-			if(map[row][col + 1] != 0){
-				if(map[row][col + 1] == 2){
-					map[row][col + 1] = 4;
-					burnBlockCoordinates.add(row);
-					burnBlockCoordinates.add(col+1);
-				}else if(map[row][col + 1] == 3){
-					map[row][col + 1] = set*100;
-				}else{
-					map[row][col + 1] = set;
+			if(col + a < mapWidth && colRight){
+				if(map[row][col + a] != 0){
+					if(map[row][col + a] == 2){
+						map[row][col + a] = 4;
+						if(!pierce){
+							colRight = false;
+						}
+						burnBlockCoordinates.add(row);
+						burnBlockCoordinates.add(col+a);
+					}else if(map[row][col + a] == playerId){
+						map[row][col + a] = set*100;
+					}else{
+						map[row][col + a] = set;
+					}
+				}else if(!pierce){
+					colRight = false;
 				}
 			}
 		}
 		return burnBlockCoordinates;
 	}
 	
-	public void removeFlame(int row, int col, int comp){
+	public void removeFlame(int row, int col, int comp, int numberOfFlames, int playerId){
 		if(map[row][col] == comp){			
 			map[row][col] = 1;
 			 checkIfPowerup(row, col);
 		}else if(map[row][col] == comp*100){
-			map[row][col] = 3;
+			map[row][col] = playerId;
 		}
-		if(row -1 > 0){
-			if(map[row - 1][col] == comp || map[row - 1][col] == 4){
-				map[row - 1][col] = 1;
-				 checkIfPowerup(row-1, col);
-			}else if(map[row - 1][col] == comp*100){
-				map[row - 1][col] = 3;
+		
+		for(int a = 1; a <= numberOfFlames; a++){
+			if(row - a > 0){
+				if(map[row - a][col] == comp || map[row - a][col] == 4){
+					map[row - a][col] = 1;
+					checkIfPowerup(row-a, col);
+				}else if(map[row - a][col] == comp*100){
+					map[row - a][col] = playerId;
+				}
 			}
-		}
-		if(row + 1 < mapHeight){
-			if(map[row + 1][col] == comp || map[row + 1][col] == 4){
-				map[row + 1][col] = 1;
-			      checkIfPowerup(row+1, col);
-			}else if(map[row + 1][col] == comp*100){
-				map[row + 1][col] = 3;
+			if(row + a < mapHeight){
+				if(map[row + a][col] == comp || map[row + a][col] == 4){
+					map[row + a][col] = 1;
+					checkIfPowerup(row+a, col);
+				}else if(map[row + a][col] == comp*100){
+					map[row + a][col] = playerId;
+				}
 			}
-		}
-		if(col - 1 > 0){
-			if(map[row][col - 1] == comp || map[row][col - 1] == 4){
-				map[row][col - 1] = 1;
-		        checkIfPowerup(row, col-1);
-			}else if(map[row][col - 1] == comp*100){
-				map[row][col - 1] = 3;
+			if(col - a > 0){
+				if(map[row][col - a] == comp || map[row][col - a] == 4){
+					map[row][col - a] = 1;
+					checkIfPowerup(row, col-a);
+				}else if(map[row][col - a] == comp*100){
+					map[row][col - a] = playerId;
+				}
 			}
-		}
-		if(col + 1 < mapWidth){
-			if(map[row][col + 1] == comp || map[row][col + 1] == 4){
-				map[row][col + 1] = 1;
-		        checkIfPowerup(row, col+1);
-			}else if(map[row][col + 1] == comp*100){
-				map[row][col + 1] = 3;
+			if(col + a < mapWidth){
+				if(map[row][col + a] == comp || map[row][col + a] == 4){
+					map[row][col + a] = 1;
+					checkIfPowerup(row, col+a);
+				}else if(map[row][col + a] == comp*100){
+					map[row][col + a] = playerId;
+				}
 			}
 		}
 	}
@@ -374,6 +382,15 @@ public class TileMap extends Thread{
 			break;
 		case 530:
 			powerupMap[row][col] = 531;
+			break;
+		case 540:
+			powerupMap[row][col] = 541;
+			break;
+		case 550:
+			powerupMap[row][col] = 551;
+			break;
+		case 560:
+			powerupMap[row][col] = 561;
 			break;
 		}
 	}
@@ -393,13 +410,19 @@ public class TileMap extends Thread{
 					g.drawImage(speed_powerup, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}else if(current == 1 && powerupCurrent == 531) {
 					g.drawImage(flame_powerup, col*tileSize, row*tileSize, tileSize, tileSize, null);
+				}else if(current == 1 && powerupCurrent == 541) {
+					g.drawImage(pierceBomb_powerup, col*tileSize, row*tileSize, tileSize, tileSize, null);
+				}else if(current == 1 && powerupCurrent == 551) {
+					g.drawImage(redBomb_powerup, col*tileSize, row*tileSize, tileSize, tileSize, null);
+				}else if(current == 1 && powerupCurrent == 561) {
+					g.drawImage(life_powerup, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}else if(current == 0){
 					g.drawImage(hard_block, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}else if(current == 1 ){
 					g.drawImage(walkable, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}else if(current == 2){
 					g.drawImage(soft_block, col*tileSize, row*tileSize, tileSize, tileSize, null);
-				}else if(current == 3){
+				}else if(current == 600 || current == 601){
 					g.drawImage(bomb, col*tileSize, row*tileSize, tileSize, tileSize, null);
 				}else if(current >= 5){
 					g.drawImage(fire, col*tileSize, row*tileSize, tileSize, tileSize, null);

@@ -30,15 +30,43 @@ public class Client extends UDPNetwork{
 		
 		send(hostIPAddress, hostPortNumber, "READY");
 		
+		String xCoordinates = "";
+		String yCoordinates = "";
+		String powerUp = "";
+		
+		String received2[] = receive(portNumber).split(" ");
+		if(received2[0].equals("XCOORDINATE")){
+			xCoordinates = received2[1];
+		}
+		send(hostIPAddress, hostPortNumber, "RECEIVED");
+
+		received2 = receive(portNumber).split(" ");
+		if(received2[0].equals("YCOORDINATE")){
+			yCoordinates = received2[1];
+		}
+		send(hostIPAddress, hostPortNumber, "RECEIVED");
+		
+		received2 = receive(portNumber).split(" ");
+		if(received2[0].equals("POWERUP")){
+			powerUp = received2[1];
+		}
+		send(hostIPAddress, hostPortNumber, "RECEIVED");
+		
+		gamePanel.setMap(xCoordinates, yCoordinates, powerUp);
+		
 		while(true){
-			String received2[] = receive(portNumber).split(" ");
-			if(received2[0].equals("START_GAME")){
+			String received3[] = receive(portNumber).split(" ");
+			if(received3[0].equals("START_GAME")){
 				break;
 			}
 		}
 		gamePanel.setController(this);
 		ClientReceive clientReceive = new ClientReceive(portNumber, gamePanel, hostIPAddress, hostPortNumber);
 		clientReceive.addNotify();
+	}
+	
+	public void killPlayer(String playerName){
+		send(hostIPAddress, hostPortNumber, ("KILL " + playerName + " " + ipAddress + portNumber));
 	}
 	
 	public void requestMovementUpdate(int move){
