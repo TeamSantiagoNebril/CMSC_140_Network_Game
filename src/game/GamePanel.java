@@ -6,6 +6,7 @@ import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.image.BufferedImage;
+import java.util.ArrayList;
 import java.util.Scanner;
 import javax.swing.JPanel;
 
@@ -48,11 +49,14 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 	private double initialPlayerX;
 	private double initialPlayerY;
 	
+	ArrayList<String> playerNames = new ArrayList<String>();
+	
 	public GamePanel(){
 		super();
 		width = (int)Toolkit.getDefaultToolkit().getScreenSize().getWidth();
 		height = (int)Toolkit.getDefaultToolkit().getScreenSize().getHeight();
-		
+		playerNames.add("PLAYER1");
+		playerNames.add("PLAYER2");
 	}
 	
 	public void addNotify(){
@@ -158,14 +162,35 @@ public class GamePanel extends JPanel implements Runnable, KeyListener{
 		}
 	}
 	
+	public String getWinner(){
+		if(playerNames.size() == 0){
+			return "TIE";
+		}else if(playerNames.size() == 1){
+			return playerNames.get(0);
+		}
+		return "";
+	}
 	
 	public String getDiedPlayer(){
 		String temp = "";
 		if(player.isDiedPlayer()){
 			temp += "PLAYER1 ";
+			for(int a = 0; a < playerNames.size(); a++){
+				if(playerNames.get(a).equals("PLAYER1")){
+					playerNames.remove(a);
+					break;
+				}
+			}
 		}
 		if(player2.isDiedPlayer()){
 			temp += "PLAYER2 ";
+			playerNames.remove(1);
+			for(int a = 0; a < playerNames.size(); a++){
+				if(playerNames.get(a).equals("PLAYER2")){
+					playerNames.remove(a);
+					break;
+				}
+			}
 		}
 		return temp;
 	}

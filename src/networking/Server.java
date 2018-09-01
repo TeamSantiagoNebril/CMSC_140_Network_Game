@@ -90,7 +90,7 @@ public class Server extends UDPNetwork implements Runnable {
 		serverSend.addNotify();
 		
 		try {
-			Thread.sleep(350);
+			Thread.sleep(400);
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}

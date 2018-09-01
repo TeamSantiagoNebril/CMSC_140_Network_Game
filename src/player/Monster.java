@@ -100,8 +100,8 @@ public class Monster extends Thread{
 			calculatedX += moveSpeed;
 		}
 		
-		if((calculateDestination(calculatedX, calculatedY) > 5 || calculateDestination(calculatedX + width - 1, calculatedY) > 5) || 
-				(calculateDestination(calculatedX, calculatedY + height - 1) > 5 || calculateDestination(calculatedX + width - 1, calculatedY + height -1) > 5)){
+		if((calculateDestination(calculatedX, calculatedY) > 5 && calculateDestination(calculatedX, calculatedY) <= 500 || calculateDestination(calculatedX + width - 1, calculatedY) > 5 && calculateDestination(calculatedX + width - 1, calculatedY) <= 500) || 
+				(calculateDestination(calculatedX, calculatedY + height - 1) > 5 && calculateDestination(calculatedX, calculatedY + height - 1) <= 500|| calculateDestination(calculatedX + width - 1, calculatedY + height -1) > 5 && calculateDestination(calculatedX + width - 1, calculatedY + height -1) <= 500)){
 			return "DEAD";
 		}
 		

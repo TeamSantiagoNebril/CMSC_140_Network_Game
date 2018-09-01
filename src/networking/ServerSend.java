@@ -3,6 +3,7 @@ import java.io.IOException;
 import java.net.DatagramPacket;
 import java.net.DatagramSocket;
 import java.net.InetAddress;
+import java.util.ArrayList;
 
 import game.GamePanel;
 public class ServerSend extends UDPNetwork implements Runnable{
@@ -10,11 +11,15 @@ public class ServerSend extends UDPNetwork implements Runnable{
 	int playersPortNumber[];
 	GamePanel gamePanel;
 	int bombId = 0;
+	
+	String dead = "";
+	String winner = "";
+	
+	
 	public ServerSend(String playersIP[], int playersPortNumber[], GamePanel gamePanel){
 		this.playersIP = playersIP;
 		this.playersPortNumber = playersPortNumber;
 		this.gamePanel = gamePanel;
-		
 	}
 	
 	public void addNotify(){
@@ -32,11 +37,19 @@ public class ServerSend extends UDPNetwork implements Runnable{
 			sendMonsterCoordinates();
 			powerUp();
 			playerDied();
+			checkWinner();
 			try {
 				Thread.sleep(15);
 			} catch (InterruptedException e) {
 				e.printStackTrace();
 			}
+		}
+	}
+	
+	public void checkWinner(){
+		String temp = gamePanel.getWinner();
+		if(!temp.equals("")){
+			System.out.println("winner: " + temp);
 		}
 	}
 	

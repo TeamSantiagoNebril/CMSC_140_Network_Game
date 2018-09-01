@@ -43,7 +43,7 @@ public class Player{
 	private double bombX;
 	private double bombY;
 	private boolean isAnimatingDeadImage;
-	
+	private boolean lastFaceLeft;
 	private boolean bombMax;
 	private boolean skate;
 	private boolean fire;
@@ -128,28 +128,34 @@ public class Player{
 		
 		
 		if(appear){
-			faceleft = false;
+			//faceleft = false;
+			//lastFaceLeft = false;
 			double dx = x - this.x;
 			double dy = y - this.y;
 			if(dy < 0){  // for bomberman sprite
 				lastdx = 0;
 				lastdy = -moveSpeed;
+				faceleft = false;
 				animation.setMove(1);
 			}else if(dy > 0){
 				lastdx = 0;
 				lastdy = moveSpeed;
+				faceleft = false;
 				animation.setMove(2);
 			}else if(dx > 0){
 
 				lastdx = moveSpeed;
 				lastdy = 0;
+				faceleft = false;
 				animation.setMove(3);
 			}else if(dx < 0){
 				lastdx = -moveSpeed;
 				lastdy = 0;
 				faceleft = true;
+				//lastFaceLeft = true;
 				animation.setMove(3);
 			}else{
+				//faceleft = lastFaceLeft;
 				animation.setMove(12);
 			}
 
@@ -209,7 +215,7 @@ public class Player{
 					for(int a = 0; a < 8; a++){
 						animation.setMove(4+a);
 						try {
-							Thread.sleep(100);
+							Thread.sleep(170);
 						} catch (InterruptedException e) {
 							e.printStackTrace();
 						}
@@ -469,7 +475,7 @@ public class Player{
 	}
 	
 	public void addMaxBomb(){
-		if(maxBombNumber <= 5){
+		if(maxBombNumber < 10){
 			maxBombNumber++;
 			bombNumber++;
 		}
