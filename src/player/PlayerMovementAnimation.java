@@ -44,7 +44,7 @@ public class PlayerMovementAnimation {
 	public PlayerMovementAnimation(int playerNumber){
 		this.playerNumber = playerNumber;
 		Toolkit t=Toolkit.getDefaultToolkit();
-		if(playerNumber == 1 || playerNumber == 2){
+		if(playerNumber == 1){
 			walkUp1 = t.getImage("assets/images/Sprites/Bomberman/Back/Bman_B_f00.png");
 			walkUp2 = t.getImage("assets/images/Sprites/Bomberman/Back/Bman_B_f01.png");
 			walkUp3 = t.getImage("assets/images/Sprites/Bomberman/Back/Bman_B_f02.png");
@@ -69,6 +69,39 @@ public class PlayerMovementAnimation {
 			walkSide6 = t.getImage("assets/images/Sprites/Bomberman/Side/Bman_F_f05.png");
 			walkSide7 = t.getImage("assets/images/Sprites/Bomberman/Side/Bman_F_f06.png");
 			walkSide8 = t.getImage("assets/images/Sprites/Bomberman/Side/Bman_F_f07.png");
+			dead1 = t.getImage("assets/images/Sprites/Bomberman/Dead/Bman_D_f00.png");
+			dead2 = t.getImage("assets/images/Sprites/Bomberman/Dead/Bman_D_f01.PNG");
+			dead3 = t.getImage("assets/images/Sprites/Bomberman/Dead/Bman_D_f01_5.PNG");
+			dead4 = t.getImage("assets/images/Sprites/Bomberman/Dead/Bman_D_f02.PNG");
+			dead5 = t.getImage("assets/images/Sprites/Bomberman/Dead/Bman_D_f02_5.PNG");
+			dead6 = t.getImage("assets/images/Sprites/Bomberman/Dead/Bman_D_f03.PNG");
+			dead7 = t.getImage("assets/images/Sprites/Bomberman/Dead/Bman_D_f04.PNG");
+			dead8 = t.getImage("assets/images/Sprites/Bomberman/Dead/Bman_D_f05.PNG");
+		}else if(playerNumber == 2) {
+			walkUp1 = t.getImage("assets/images/Sprites/Bomberman/Back/Bman_B_f00_blue.png");
+			walkUp2 = t.getImage("assets/images/Sprites/Bomberman/Back/Bman_B_f01_blue.png");
+			walkUp3 = t.getImage("assets/images/Sprites/Bomberman/Back/Bman_B_f02_blue.png");
+			walkUp4 = t.getImage("assets/images/Sprites/Bomberman/Back/Bman_B_f03_blue.png");
+			walkUp5 = t.getImage("assets/images/Sprites/Bomberman/Back/Bman_B_f04_blue.png");
+			walkUp6 = t.getImage("assets/images/Sprites/Bomberman/Back/Bman_B_f05_blue.png");
+			walkUp7 = t.getImage("assets/images/Sprites/Bomberman/Back/Bman_B_f06_blue.png");
+			walkUp8 = t.getImage("assets/images/Sprites/Bomberman/Back/Bman_B_f07_blue.png");
+			walkDown1 = t.getImage("assets/images/Sprites/Bomberman/Front/Bman_F_f00_blue.png");
+			walkDown2 = t.getImage("assets/images/Sprites/Bomberman/Front/Bman_F_f01_blue.png");
+			walkDown3 = t.getImage("assets/images/Sprites/Bomberman/Front/Bman_F_f02_blue.png");
+			walkDown4 = t.getImage("assets/images/Sprites/Bomberman/Front/Bman_F_f03_blue.png");
+			walkDown5 = t.getImage("assets/images/Sprites/Bomberman/Front/Bman_F_f04_blue.png");
+			walkDown6 = t.getImage("assets/images/Sprites/Bomberman/Front/Bman_F_f05_blue.png");
+			walkDown7 = t.getImage("assets/images/Sprites/Bomberman/Front/Bman_F_f06_blue.png");
+			walkDown8 = t.getImage("assets/images/Sprites/Bomberman/Front/Bman_F_f07_blue.png");
+			walkSide1 = t.getImage("assets/images/Sprites/Bomberman/Side/Bman_F_f00_blue.png");
+			walkSide2 = t.getImage("assets/images/Sprites/Bomberman/Side/Bman_F_f01_blue.png");
+			walkSide3 = t.getImage("assets/images/Sprites/Bomberman/Side/Bman_F_f02_blue.png");
+			walkSide4 = t.getImage("assets/images/Sprites/Bomberman/Side/Bman_F_f03_blue.png");
+			walkSide5 = t.getImage("assets/images/Sprites/Bomberman/Side/Bman_F_f04_blue.png");
+			walkSide6 = t.getImage("assets/images/Sprites/Bomberman/Side/Bman_F_f05_blue.png");
+			walkSide7 = t.getImage("assets/images/Sprites/Bomberman/Side/Bman_F_f06_blue.png");
+			walkSide8 = t.getImage("assets/images/Sprites/Bomberman/Side/Bman_F_f07_blue.png");
 			dead1 = t.getImage("assets/images/Sprites/Bomberman/Dead/Bman_D_f00.png");
 			dead2 = t.getImage("assets/images/Sprites/Bomberman/Dead/Bman_D_f01.PNG");
 			dead3 = t.getImage("assets/images/Sprites/Bomberman/Dead/Bman_D_f01_5.PNG");
@@ -180,19 +213,20 @@ public class PlayerMovementAnimation {
 	}
 	
 	public Image getImageDead(){
-		if(move == 4){
+		frame++;
+		if(frame == 1){
 			return dead1;
-		}else if(move == 5){
+		}else if(frame == 2){
 			return dead2;
-		}else if(move == 6){
+		}else if(frame == 3){
 			return dead3;
-		}else if(move == 7){
+		}else if(frame == 4){
 			return dead4;
-		}else if(move == 8){
+		}else if(frame == 5){
 			return dead5;
-		}else if(move == 9){
+		}else if(frame == 6){
 			return dead6;
-		}else if(move == 10){
+		}else if(frame == 7){
 			return dead7;
 		}
 		return dead8;

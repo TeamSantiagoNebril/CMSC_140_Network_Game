@@ -33,7 +33,6 @@ public class UDPNetwork {
 			InetAddress address = InetAddress.getByName(ipAddress);
 			DatagramPacket packet= new DatagramPacket(buf, buf.length, address, portNumber);
 			socket.send(packet);
-			
 			socket.close();
 		}catch (IOException e) {
 			e.printStackTrace();

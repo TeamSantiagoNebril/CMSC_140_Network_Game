@@ -49,7 +49,7 @@ public class TileMap extends Thread{
     private Image fire1 = t.getImage("assets/images/Sprites/Flame/Flame_f00.png");
     private Image fire2 = t.getImage("assets/images/Sprites/Flame/Flame_f01.png");
     private Image fire3 = t.getImage("assets/images/Sprites/Flame/Flame_f02.png");
-    private Image softBlockBurn1 = t.getImage("assets/images/Sprites/Blocks/softblock_burn_00.jpg");
+    private Image softBlockBurn1 = t.getImage("assets/images/Sprites/Blocks/softblock_burn_00.png");
     private Image softBlockBurn2 = t.getImage("assets/images/Sprites/Blocks/softblock_burn_01.png");
     private Image softBlockBurn3 = t.getImage("assets/images/Sprites/Blocks/softblock_burn_02.png");
     private Image softBlockBurn4 = t.getImage("assets/images/Sprites/Blocks/softblock_burn_03.png");

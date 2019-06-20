@@ -29,6 +29,7 @@ public class MainMenuManager extends JFrame{
 	{
 		super();
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH); 
+		//this.setSize(1500, 700);
 		this.setUndecorated(true);
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		this.setTitle("Bomberman");
@@ -60,6 +61,7 @@ public class MainMenuManager extends JFrame{
 				gamePanel = new GamePanel();
 				
 				InitializeNetwork network = new InitializeNetwork(gamePanel);
+				
 				this.setContentPane(gamePanel);
 				this.pack();
 				gamePanel.requestFocusInWindow();

@@ -27,7 +27,6 @@ public class Client extends UDPNetwork{
 		
 		send(hostIPAddress, hostPortNumber, "JOIN " + portNumber + " " + ipAddress);
 		
-		
 		String received[] = receive(portNumber).split(" ");
 		if(received[0].equals("POSITIONS")){
 			gamePanel.init(received[1]);

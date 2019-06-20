@@ -590,6 +590,7 @@ public class Player{
 				g.drawImage(animation.getImage(), (int)x, (int)y, width, height, null);
 			}
 		}
+		
 	}
 	
 }

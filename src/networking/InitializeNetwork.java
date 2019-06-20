@@ -26,10 +26,19 @@ public class InitializeNetwork {
 				
 				String hostIP;
 				try {
+					
 					hostIP = InetAddress.getLocalHost().getHostAddress();
 					Server server = new Server(portNumberInput, gamePanel);
+					try {
+						Thread.sleep(100);
+					} catch (InterruptedException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
 					client = new Client(hostIP, portNumberInput, portNumberInput - 1, gamePanel);
+					
 					break;
+					
 				} catch (UnknownHostException e) {
 					e.printStackTrace();
 				}

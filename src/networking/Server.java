@@ -47,14 +47,25 @@ public class Server extends UDPNetwork implements Runnable {
 	}
 	
 	public void waitForPlayerConnections(){
+		System.out.println("Waiting for player connections");
 		int a = 0;
 		while(a < 2){
 			String receivedString[] = receive(portNumber).split(" ");
+			System.out.println("Player Connected: " + receivedString[2] + ":" + receivedString[1]);
 			if(receivedString[0].equals("JOIN")){
 				playersPortNumber[a] = Integer.parseInt(receivedString[1]);
 				playersIP[a] = receivedString[2];
 				a++;
 			}
+		}
+		
+		System.out.println("Start Game");
+		
+		try {
+			Thread.sleep(2000);
+		} catch (InterruptedException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
 		}
 	}
 	
@@ -78,7 +89,6 @@ public class Server extends UDPNetwork implements Runnable {
 				continue;
 			}
 		}
-		
 		
 		generateMap();
 	
@@ -193,7 +203,6 @@ public class Server extends UDPNetwork implements Runnable {
 		        powerupRandomizerVariable.remove(position);
 		        powerupType.remove(pValue);
 			}
-			
 			
 			for(int a = 0; a < 2; a++){ //number of players!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 				send(playersIP[a], playersPortNumber[a], "XCOORDINATE " + xCoordinates);
